@@ -7,9 +7,11 @@
 ;   You must not remove this notice, or any other, from this software.
 
 (ns datomic.samples.repl
-  (:use [datomic.api :only (q db) :as d]))
+  (:use [datomic.api :only (q db) :as d])
+  (:require [clojure.pprint :as pprint]))
 
 (defn scratch-conn
+  "Create a connection to an anonymous, in-memory database."
   []
   (let [uri (str "datomic:mem://" (d/squuid))]
     (d/delete-database uri)
@@ -31,13 +33,22 @@
      (use '[datomic.api :only (~'q ~'db) :as ~'d]
           'datomic.samples.io
           'datomic.samples.query
+          'datomic.samples.generators
           'datomic.samples.transact
           'datomic.samples.incanter)
      (require
-      '[clojure.string :as str]
-      '[clojure.java.io :as io]
+      '[clojure.string :as ~'str]
+      '[clojure.java.io :as ~'io]
       '[clojure.pprint :as ~'pprint]
       '[clojure.test.generative.generators :as ~'gen])
      :awesome))
+
+(defmacro defpp
+  "Like def, but pretty prints the value of the var created"
+  [name & more]
+  `(do
+     (def ~name ~@more)
+     (pprint/pprint ~name)
+     (var ~name)))
 
 

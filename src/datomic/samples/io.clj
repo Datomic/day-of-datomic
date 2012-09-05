@@ -8,22 +8,25 @@
 
 (ns datomic.samples.io
   (:use [datomic.api :only (q db) :as d])
-  (:require [clojure.java.io :as jio])
+  (:require [clojure.java.io :as io])
   (:import datomic.Util))
 
 (defn resource-uri
-  "Returns URI or nil"
+  "Returns URI for r, if r names a resource available on the
+   class loader for the current thread."
   [r]
   (let [cl (.getContextClassLoader (Thread/currentThread))]
     (.getResource cl r)))
 
 (defn read-all
-  "Read all forms in f"
+  "Read all forms in f, where f is any resource that can
+   be opened by io/reader"
   [f]
-  (Util/readAll (jio/reader f)))
+  (Util/readAll (io/reader f)))
 
 (defn transact-all
-  "Load and run all transactions from f"
+  "Load and run all transactions from f, where f is any
+   resource that can be opened by io/reader."
   [conn f]
   (doseq [txd (read-all f)]
     (d/transact conn txd))

@@ -32,6 +32,14 @@
   (let [res (apply q query db args)]
     (d/entity db (only res))))
 
+(defn find-by
+  "Returns the unique entity identified by attr and val."
+  [db attr val]
+  (qe '[:find ?e
+        :in $ ?attr ?val
+        :where [?e ?attr ?val]]
+      db attr val))
+
 (defn qes
   "Returns the entities returned by a query."
   [query db & args]
@@ -39,6 +47,14 @@
        (mapv (fn [item]
                (assert (= 1 (count item)))
                (d/entity db (first item))))))
+
+(defn find-all-by
+  "Returns all entities possessing attr."
+  [db attr]
+  (qes '[:find ?e
+         :in $ ?attr
+         :where [?e ?attr]]
+       db attr))
 
 (defn qfs
   "Returns the first of each query result."
