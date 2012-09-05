@@ -1,0 +1,6 @@
+;; sources of data
+[{:db/id #db/id[:db.part/db]
+  :db/ident :source/user
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db.install/_attribute :db.part/db}]
