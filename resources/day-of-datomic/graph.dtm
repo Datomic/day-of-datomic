@@ -1,0 +1,86 @@
+;; inspired by http://docs.neo4j.org/chunked/stable/cypher-cookbook-hyperedges.html
+[{:db/id #db/id[:db.part/db]
+  :db/ident :group/name
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/unique :db.unique/identity
+  :db.install/_attribute :db.part/db}
+ {:db/id #db/id[:db.part/db]
+  :db/ident :user/name
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/unique :db.unique/identity
+  :db.install/_attribute :db.part/db} 
+ {:db/id #db/id[:db.part/db]
+  :db/ident :role/name
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/unique :db.unique/identity
+  :db.install/_attribute :db.part/db}
+ {:db/id #db/id[:db.part/db]
+  :db/ident :roleInGroup/name
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/unique :db.unique/identity
+  :db.install/_attribute :db.part/db}
+ {:db/id #db/id[:db.part/db]
+  :db/ident :groups
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/many
+  :db.install/_attribute :db.part/db
+  :db/doc "A user's reference to a group"}
+ {:db/id #db/id[:db.part/db]
+  :db/ident :hasRoleInGroups
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/many
+  :db.install/_attribute :db.part/db
+  :db/doc "A user's reference to a role in a group"}
+ {:db/id #db/id[:db.part/db]
+  :db/ident :hasGroups
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/many
+  :db.install/_attribute :db.part/db
+  :db/doc "A role-in-group's reference to a group"}
+ {:db/id #db/id[:db.part/db]
+  :db/ident :hasRoles
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/many
+  :db.install/_attribute :db.part/db
+  :db/doc "A role-in-group's reference to a role"}
+ {:db/id #db/id[:db.part/db]
+  :db/ident :canHaves
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/many
+  :db.install/_attribute :db.part/db
+  :db/doc "A group's reference to a role"}]
+
+[{:db/id #db/id[:db.part/user -1]
+  :user/name "User1"
+  :groups [#db/id [:db.part/user -31]
+           #db/id [:db.part/user -32]]
+  :hasRoleInGroups [#db/id [:db.part/user -21]
+                    #db/id [:db.part/user -22]]}
+ {:db/id #db/id [:db.part/user -21]
+  :roleInGroup/name "U1G1R2"
+  :hasGroups [#db/id [:db.part/user -31]]
+  :hasRoles [#db/id [:db.part/user -42]]}
+ {:db/id #db/id [:db.part/user -22]
+  :roleInGroup/name "U1G2R1"
+  :hasGroups [#db/id [:db.part/user -32]]
+  :hasRoles [#db/id [:db.part/user -41]]}
+ {:db/id #db/id [:db.part/user -31]
+  :group/name "Group1"
+  :canHaves [#db/id [:db.part/user -41]
+             #db/id [:db.part/user -42]]}
+ {:db/id #db/id [:db.part/user -32]
+  :group/name "Group2"
+  :canHaves [#db/id [:db.part/user -41]
+             #db/id [:db.part/user -42]]}
+ {:db/id #db/id [:db.part/user -41]
+  :role/name "Role1"}
+ {:db/id #db/id [:db.part/user -42]
+  :role/name "Role2"}]
+
+
+
+

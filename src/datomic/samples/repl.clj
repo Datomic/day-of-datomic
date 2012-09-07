@@ -31,6 +31,7 @@
      #_(set! *warn-on-reflection* true)
      (set! *print-length* 20)
      (use '[datomic.api :only (~'q ~'db) :as ~'d]
+          'datomic.samples.datalog
           'datomic.samples.io
           'datomic.samples.query
           'datomic.samples.generators

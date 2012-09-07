@@ -41,12 +41,12 @@
       db attr val))
 
 (defn qes
-  "Returns the entities returned by a query."
+  "Returns the entities returned by a query, assuming that
+   all :find results are entity ids."
   [query db & args]
   (->> (apply q query db args)
-       (mapv (fn [item]
-               (assert (= 1 (count item)))
-               (d/entity db (first item))))))
+       (mapv (fn [items]
+               (mapv (partial d/entity db) items)))))
 
 (defn find-all-by
   "Returns all entities possessing attr."
