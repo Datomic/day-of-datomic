@@ -1,0 +1,105 @@
+[
+ ;; community
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :community/name
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/fulltext true
+  :db/doc "A community's name"
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :community/url
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/doc "A community's url"
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :community/neighborhood
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "A community's neighborhood"
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :community/category
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/many
+  :db/fulltext true
+  :db/doc "All community categories"
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :community/orgtype
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "A community orgtype enum value"
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :community/type
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "A community type enum value"
+  :db.install/_attribute :db.part/db}
+
+ ;; community/org-type enum values
+ [:db/add #db/id[:db.part/user] :db/ident :community.orgtype/community]
+ [:db/add #db/id[:db.part/user] :db/ident :community.orgtype/commercial]
+ [:db/add #db/id[:db.part/user] :db/ident :community.orgtype/nonprofit]
+ [:db/add #db/id[:db.part/user] :db/ident :community.orgtype/personal]
+
+ ;; community/type enum values
+ [:db/add #db/id[:db.part/user] :db/ident :community.type/email-list]
+ [:db/add #db/id[:db.part/user] :db/ident :community.type/twitter]
+ [:db/add #db/id[:db.part/user] :db/ident :community.type/facebook-page]
+ [:db/add #db/id[:db.part/user] :db/ident :community.type/blog]
+ [:db/add #db/id[:db.part/user] :db/ident :community.type/website]
+ [:db/add #db/id[:db.part/user] :db/ident :community.type/wiki]
+ [:db/add #db/id[:db.part/user] :db/ident :community.type/myspace]
+ [:db/add #db/id[:db.part/user] :db/ident :community.type/ning]
+
+ ;; neighborhood
+ {:db/id #db/id[:db.part/db]
+  :db/ident :neighborhood/name
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/unique :db.unique/identity
+  :db/doc "A unique neighborhood name (upsertable)"
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :neighborhood/district
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "A neighborhood's district"
+  :db.install/_attribute :db.part/db}
+
+ ;; district
+ {:db/id #db/id[:db.part/db]
+  :db/ident :district/name
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/unique :db.unique/identity
+  :db/doc "A unique district name (upsertable)"
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :district/region
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "A district region enum value"
+  :db.install/_attribute :db.part/db}
+
+ ;; district/region enum values
+ [:db/add #db/id[:db.part/user] :db/ident :region/n]
+ [:db/add #db/id[:db.part/user] :db/ident :region/ne]
+ [:db/add #db/id[:db.part/user] :db/ident :region/e]
+ [:db/add #db/id[:db.part/user] :db/ident :region/se]
+ [:db/add #db/id[:db.part/user] :db/ident :region/s]
+ [:db/add #db/id[:db.part/user] :db/ident :region/sw]
+ [:db/add #db/id[:db.part/user] :db/ident :region/w]
+ [:db/add #db/id[:db.part/user] :db/ident :region/nw]
+ ]

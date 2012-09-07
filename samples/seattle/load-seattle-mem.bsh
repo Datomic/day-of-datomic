@@ -1,0 +1,16 @@
+uri = "datomic:mem://seattle";
+Peer.createDatabase(uri);
+conn = Peer.connect(uri);
+
+schema_file = "samples/seattle/seattle-schema.dtm";
+schema_rdr = new FileReader(schema_file);
+schema_tx = Util.readAll(schema_rdr).get(0);
+conn.transact(schema_tx).get();
+schema_rdr.close();
+
+data_file = "samples/seattle/seattle-data0.dtm";
+data_rdr = new FileReader(data_file);
+data_tx = Util.readAll(data_rdr).get(0);
+conn.transact(data_tx).get();
+data_rdr.close();
+
