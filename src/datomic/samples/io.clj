@@ -11,13 +11,6 @@
   (:require [clojure.java.io :as io])
   (:import datomic.Util))
 
-(defn resource-uri
-  "Returns URI for r, if r names a resource available on the
-   class loader for the current thread."
-  [r]
-  (let [cl (.getContextClassLoader (Thread/currentThread))]
-    (.getResource cl r)))
-
 (defn read-all
   "Read all forms in f, where f is any resource that can
    be opened by io/reader"

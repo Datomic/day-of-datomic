@@ -10,10 +10,8 @@
 (def conn (scratch-conn))
 
 (doc transact-all)
-(doc io/reader)
-(doc resource-uri)
 
-(transact-all conn (resource-uri "day-of-datomic/social-news.dtm"))
+(transact-all conn (io/resource "day-of-datomic/social-news.dtm"))
 
 (doc qes)
 (source qes)
@@ -28,7 +26,7 @@
 (defpp upvote-all-stories
   "Transaction data for new-user-id to upvote all stories"
   (mapv
-   (fn [story] [:db/add new-user-id :user/upVotes (:db/id story)])
+   (fn [[story]] [:db/add new-user-id :user/upVotes (:db/id story)])
    all-stories))
 
 (defpp new-user
@@ -99,7 +97,7 @@
 (doc gen-users-with-upvotes)
 
 (defpp ten-new-users
-  (gen-users-with-upvotes all-stories "user" 10))
+  (gen-users-with-upvotes (mapv first all-stories) "user" 10))
 
 (def add-ten-new-users-result
   (d/transact conn ten-new-users))
@@ -119,7 +117,7 @@
 (defpp users-with-emails-and-upvotes
   (->> (find-all-by (db conn) :user/email)
        (mapv
-        (fn [ent]                                
+        (fn [[ent]]                                
           {:email (:user/email ent)
            :upvoted (mapv :story/url (:user/upVotes ent))}))))
 

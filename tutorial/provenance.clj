@@ -2,26 +2,26 @@
 (easy!)
 
 (def conn (scratch-conn))
-(transact-all conn (resource-uri "day-of-datomic/social-news.dtm"))
-(transact-all conn (resource-uri "day-of-datomic/provenance.dtm"))
+(transact-all conn (io/resource "day-of-datomic/social-news.dtm"))
+(transact-all conn (io/resource "day-of-datomic/provenance.dtm"))
 
-(def stu (qe '[:find ?e :where [?e :user/email "stuarthalloway@datomic.com"]]
+(defpp stu (qe '[:find ?e :where [?e :user/email "stuarthalloway@datomic.com"]]
              (db conn)))
 
-(def editor (qe '[:find ?e :where [?e :user/email "editor@example.com"]]
-               (db conn)))
+(defpp editor (qe '[:find ?e :where [?e :user/email "editor@example.com"]]
+                  (db conn)))
 
 ;; Stu loves to pimp his own blog posts...
-(def tx1-result (d/transact
-                conn
-                [{:db/id (d/tempid :db.part/user)
-                  :story/title "ElastiCache in 6 minutes"
-                  :story/url "http://blog.datomic.com/2012/09/elasticache-in-5-minutes.html"}
-                 {:db/id (d/tempid :db.part/user)
-                  :story/title "Keep Chocolate Love Atomic"
-                  :story/url "http://blog.datomic.com/2012/08/atomic-chocolate.html"}
-                 {:db/id (d/tempid :db.part/tx)
-                  :source/user (:db/id stu)}]))
+(defpp tx1-result (d/transact
+                   conn
+                   [{:db/id (d/tempid :db.part/user)
+                     :story/title "ElastiCache in 6 minutes"
+                     :story/url "http://blog.datomic.com/2012/09/elasticache-in-5-minutes.html"}
+                    {:db/id (d/tempid :db.part/user)
+                     :story/title "Keep Chocolate Love Atomic"
+                     :story/url "http://blog.datomic.com/2012/08/atomic-chocolate.html"}
+                    {:db/id (d/tempid :db.part/tx)
+                     :source/user (:db/id stu)}]))
 
 ;; database t of tx1-result
 (def t (d/basis-t (:db-after @tx1-result)))

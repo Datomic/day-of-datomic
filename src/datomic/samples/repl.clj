@@ -36,7 +36,9 @@
           'datomic.samples.query
           'datomic.samples.generators
           'datomic.samples.transact
-          'datomic.samples.incanter)
+          'datomic.samples.incanter
+          'clojure.repl
+          'clojure.pprint)
      (require
       '[clojure.string :as ~'str]
       '[clojure.java.io :as ~'io]
@@ -52,4 +54,21 @@
      (pprint/pprint ~name)
      (var ~name)))
 
+
+(defn transcript
+  "Run all forms, printing a transcript as if forms were
+   individually entered interactively at the REPL."
+  [forms]
+  (binding [*ns* *ns*]
+    (let [temp (gensym)]
+      (println ";; Executing forms in temp namespace: " temp)
+      (in-ns temp)
+      (clojure.core/use 'clojure.core 'clojure.repl 'clojure.pprint)
+      (doseq [f forms]
+        (pprint/pprint f)
+        (print "=> ")
+        (pprint/pprint (eval f))
+        (println))
+      (remove-ns temp)
+      :done)))
 
