@@ -1,0 +1,50 @@
+[
+ {:db/id #db/id [:db.part/db]
+  :db/ident :example/counter
+  :db/doc "Example attribute for demonstrating transaction functions."
+  :db/valueType :db.type/long
+  :db/cardinality :db.cardinality/one
+  :db.install/_attribute :db.part/db}
+
+  {:db/id #db/id [:db.part/user]
+  :db/ident :inc
+  :db/doc "Data function that increments value of attribute a by amount."
+  :db/fn #db/fn {:lang "clojure"
+                 :params [db e a amount]
+                 :code [[:db/add e a
+                         (-> (d/entity db e) a (+ amount))]]}}
+  
+ {:db/id #db/id [:db.part/user]
+  :db/ident :validatePerson
+  :db/doc "Validate required fields for person"
+  :db/fn #db/fn
+  {:lang "clojure"
+   :params [person]
+   :requires [[clojure.string :as str]]
+   :code (let [required #{:user/email :user/lastName :user/firstName}
+               missing (remove person required)]
+           (if-let [missing (seq missing)]
+             (throw (RuntimeException. (str "Missing attributes "
+                                            (str/join ", " missing))))
+             person))}}
+
+ {:db/id #db/id [:db.part/user]
+  :db/ident :constructPerson
+  :db/doc "Construct a person"
+  :db/fn #db/fn
+  {:lang "clojure"
+   :params [db m]
+   :code (let [person (merge {:db/id (d/tempid :db.part/user)}
+                             m)
+               validate (-> (d/entity db :validatePerson) :db/fn)]
+           [(validate person)])}}
+
+ {:db/id #db/id [:db.part/user]
+  :db/ident :displayName
+  :db/fn #db/fn
+  {:lang "clojure"
+   :params [entity]
+   :requires [[clojure.string :as str]]
+   :code (str/join " " [(:user/firstName entity)
+                        (:user/lastName entity)])}} 
+ ]

@@ -72,3 +72,12 @@
       (remove-ns temp)
       :done)))
 
+(defmacro should-throw
+  "Runs forms, expecting an exception. Prints descriptive message if
+   an exception occurred. Throws if an exception did *not* occur."
+  [& forms]
+  `(try
+    ~@forms
+    (throw (ex-info "Expected exception" {:forms '~forms}))
+    (catch Throwable t#
+      (println "Got expected exception:\n\t" (.getMessage t#)))))
