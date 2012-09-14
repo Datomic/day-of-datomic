@@ -1,9 +1,9 @@
-## Day of Datomic ##
+## Day of Datomic
 
 The Day of Datomic project is a collection of samples and tutorials
 for learning [Datomic](http://datomic.com) at a Clojure REPL.
 
-## Getting Started ## 
+## Getting Started
 
 Start a REPL:
 
@@ -20,12 +20,12 @@ evaluating each form at the REPL. You might start with:
 * binding.clj
 * graph.clj
 
-## Study the Samples ##
+## Study the Samples
 
 As or after you work through the tutorial, you may want to also study
 the helper functions in src/datomic/samples.
 
-## Questions, Feedback? ##
+## Questions, Feedback?
 
 For specific feedback on the tutorials, please create an
 [issue](https://github.com/Datomic/day-of-datomic/issues). 
@@ -33,6 +33,6 @@ For specific feedback on the tutorials, please create an
 For questions about Datomic, try the [public mailing
 list](http://groups.google.com/group/datomic).
 
-## License ## 
+## License
 
 EPL. See epl-v10.html at the project root.
