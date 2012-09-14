@@ -122,3 +122,19 @@
            :upvoted (mapv :story/url (:user/upVotes ent))}))))
 
 
+;; if (contra the previous example) you want to do the left
+;; join work in the query itself, you can use something like
+;; the "maybe" function below. This is likely to get first
+;; class support in Datomic in the future.
+(defn maybe
+  "Returns the set of attr for e, or nil if e does not possess
+   any values for attr."
+  [db e attr]
+  (seq (map :a (d/datoms db :eavt e attr))))
+
+;; find all users 
+(q '[:find ?e ?upvote
+     :where
+     [?e :user/email]
+     [(user/maybe $ ?e :user/upVotes) ?upvote]]
+   (db conn))
