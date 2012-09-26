@@ -18,11 +18,6 @@
     (d/create-database uri)
     (d/connect uri)))
 
-(defn tempid
-  "Create a tempid in the :db.part/user partition."
-  ([] (d/tempid :db.part/user))
-  ([n] (d/tempid :db.part/user n)))
-
 (defmacro easy!
   "Set up a bunch of REPL conveniences. See the source
    with (source easy!) for details."
@@ -30,13 +25,14 @@
   `(do
      #_(set! *warn-on-reflection* true)
      (set! *print-length* 20)
-     (use '[datomic.api :only (~'q ~'db) :as ~'d]
+     (use '[datomic.api :as ~'d]
           'datomic.samples.datalog
           'datomic.samples.io
           'datomic.samples.query
           'datomic.samples.generators
           'datomic.samples.transact
           'datomic.samples.incanter
+          'datomic.samples.schema
           'clojure.repl
           'clojure.pprint)
      (require

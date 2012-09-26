@@ -31,7 +31,7 @@
 ;; install the function in a database, under the name :hello
 (d/transact
  conn
- [{:db/id (tempid)
+ [{:db/id (tempid :db.part/user)
    :db/doc "Example function returning a greeting"
    :db/ident :hello
    :db/fn hello}])

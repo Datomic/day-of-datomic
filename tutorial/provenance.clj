@@ -8,37 +8,38 @@
 (defpp stu (qe '[:find ?e :where [?e :user/email "stuarthalloway@datomic.com"]]
              (db conn)))
 
-(defpp editor (qe '[:find ?e :where [?e :user/email "editor@example.com"]]
-                  (db conn)))
-
 ;; Stu loves to pimp his own blog posts...
-(defpp tx1-result (d/transact
+(defpp tx1-result (transact
                    conn
-                   [{:db/id (d/tempid :db.part/user)
+                   [{:db/id (tempid :db.part/user)
                      :story/title "ElastiCache in 6 minutes"
                      :story/url "http://blog.datomic.com/2012/09/elasticache-in-5-minutes.html"}
-                    {:db/id (d/tempid :db.part/user)
+                    {:db/id (tempid :db.part/user)
                      :story/title "Keep Chocolate Love Atomic"
                      :story/url "http://blog.datomic.com/2012/08/atomic-chocolate.html"}
-                    {:db/id (d/tempid :db.part/tx)
+                    {:db/id (tempid :db.part/tx)
                      :source/user (:db/id stu)}]))
 
 ;; database t of tx1-result
-(def t (d/basis-t (:db-after @tx1-result)))
+(defpp t (basis-t (:db-after @tx1-result)))
 
 ;; transaction of tx1-result
-(def tx (d/entity (db conn) (d/t->tx t)))
+(defpp tx (entity (db conn) (t->tx t)))
 
 ;; wall clock time of tx
-(def inst (:db/txInstant tx))
+(defpp inst (:db/txInstant tx))
+
+(defpp editor (qe '[:find ?e :where [?e :user/email "editor@example.com"]]
+                  (db conn)))
 
 ;; fix spelling error in title
-(d/transact
+;; note auto-upsert and attribution
+(transact
  conn
- [{:db/id (d/tempid :db.part/user)
+ [{:db/id (tempid :db.part/user)
    :story/title "ElastiCache in 5 minutes"
    :story/url "http://blog.datomic.com/2012/09/elasticache-in-5-minutes.html"}
-  {:db/id (d/tempid :db.part/tx)
+  {:db/id (tempid :db.part/tx)
    :source/user (:db/id editor)}])
 
 ;; what is the title now?
@@ -51,7 +52,7 @@
 (q '[:find ?v
      :where [?e :story/title ?v]
             [?e :story/url "http://blog.datomic.com/2012/09/elasticache-in-5-minutes.html"]]
-   (d/as-of (db conn) inst))
+   (as-of (db conn) inst))
 
 ;; who changed the title, and when?
 (->> (q '[:find ?e ?v ?email ?inst ?added
@@ -62,7 +63,7 @@
           [?tx :source/user ?user]
           [?tx :db/txInstant ?inst]
           [?user :user/email ?email]]
-        (d/history (db conn))
+        (history (db conn))
         "http://blog.datomic.com/2012/09/elasticache-in-5-minutes.html")
      (sort-by #(nth % 3))
      pprint)

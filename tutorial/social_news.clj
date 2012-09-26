@@ -19,9 +19,7 @@
   "All stories"
   (qes '[:find ?e :where [?e :story/url]] (db conn)))
 
-(doc d/tempid)
-(doc tempid)
-(defpp new-user-id (tempid))
+(defpp new-user-id (tempid :db.part/user))
 
 (defpp upvote-all-stories
   "Transaction data for new-user-id to upvote all stories"
@@ -122,19 +120,10 @@
            :upvoted (mapv :story/url (:user/upVotes ent))}))))
 
 
-;; if (contra the previous example) you want to do the left
-;; join work in the query itself, you can use something like
-;; the "maybe" function below. This is likely to get first
-;; class support in Datomic in the future.
-(defn maybe
-  "Returns the set of attr for e, or nil if e does not possess
-   any values for attr."
-  [db e attr]
-  (seq (map :a (d/datoms db :eavt e attr))))
-
-;; find all users 
-(q '[:find ?e ?upvote
+;; find all users and their upvotes, using data function maybe
+;; to simulate outer join
+(q '[:find ?email ?upvote
      :where
-     [?e :user/email]
-     [(user/maybe $ ?e :user/upVotes) ?upvote]]
+     [?e :user/email ?email]
+     [(datomic.samples.query/maybe $ ?e :user/upVotes :none) ?upvote]]
    (db conn))

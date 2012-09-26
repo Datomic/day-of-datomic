@@ -7,7 +7,8 @@
 ;   You must not remove this notice, or any other, from this software.
 
 (ns datomic.samples.query
-  (:use [datomic.api :only (q db) :as d]))
+  (:use [datomic.api :only (q db) :as d])
+  (:require [datomic.samples.schema :as schema]))
 
 (defn only
   "Return the only item from a query result"
@@ -61,3 +62,19 @@
   [query db & args]
   (->> (apply q query db args)
        (mapv first)))
+
+(defn maybe
+  "Returns the value of attr for e, or if-not if e does not possess
+   any values for attr. Cardinality-many attributes will be
+   returned as a set"
+  [db e attr if-not]
+  (let [result (q '[:find ?v
+                    :in $ ?e ?a
+                    :where [?e ?a ?v]]
+                  db e attr)]
+    (if (seq result)
+      (case (schema/cardinality db attr)
+            :db.cardinality/one (ffirst result)
+            :db.cardinality/many (into #{} (map first result)))
+      if-not)))
+
