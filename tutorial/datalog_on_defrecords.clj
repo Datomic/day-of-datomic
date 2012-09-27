@@ -30,7 +30,7 @@
      (maps->rel suppliers [:city :name])))
 
 (defpp
-  join-on-defrecord-resutls
+  join-on-defrecord-results
   (q '[:find ?name
        :in $suppliers $shipments
        :where
