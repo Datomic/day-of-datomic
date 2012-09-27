@@ -7,7 +7,11 @@ for learning [Datomic](http://datomic.com) at a Clojure REPL.
 
 Start a REPL:
 
+    # with lein 1
     lein repl
+
+    # with lein 2
+    lein trampoline repl
 
 Work through some of the tutorials in the tutorial directory,
 evaluating each form at the REPL. You might start with:
