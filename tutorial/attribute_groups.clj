@@ -35,8 +35,8 @@
 (q '[:find ?e
      :in $ %
      :where
-     [?e ?a]
-     (attr-in-namespace ?a "story")]
+     (attr-in-namespace ?a "story")
+     [?e ?a]]
    (db conn) rules)
 
 
