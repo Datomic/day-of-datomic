@@ -25,8 +25,7 @@
   `(do
      #_(set! *warn-on-reflection* true)
      (set! *print-length* 20)
-     (use '[datomic.api :as ~'d]
-          'datomic.samples.datalog
+     (use 'datomic.samples.datalog
           'datomic.samples.io
           'datomic.samples.query
           'datomic.samples.generators
@@ -39,7 +38,8 @@
       '[clojure.string :as ~'str]
       '[clojure.java.io :as ~'io]
       '[clojure.pprint :as ~'pprint]
-      '[clojure.test.generative.generators :as ~'gen])
+      '[clojure.data.generators :as ~'gen]
+      '[datomic.api :as ~'d])
      :awesome))
 
 (defmacro defpp

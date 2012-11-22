@@ -7,8 +7,8 @@
 ;   You must not remove this notice, or any other, from this software.
 
 (ns datomic.samples.query
-  (:use [datomic.api :only (q db) :as d])
-  (:require [datomic.samples.schema :as schema]))
+  (:require [datomic.samples.schema :as schema]
+            [datomic.api :as d]))
 
 (defn only
   "Return the only item from a query result"
@@ -30,7 +30,7 @@
 (defn qe
   "Returns the single entity returned by a query."
   [query db & args]
-  (let [res (apply q query db args)]
+  (let [res (apply d/q query db args)]
     (d/entity db (only res))))
 
 (defn find-by
@@ -45,7 +45,7 @@
   "Returns the entities returned by a query, assuming that
    all :find results are entity ids."
   [query db & args]
-  (->> (apply q query db args)
+  (->> (apply d/q query db args)
        (mapv (fn [items]
                (mapv (partial d/entity db) items)))))
 
@@ -60,7 +60,7 @@
 (defn qfs
   "Returns the first of each query result."
   [query db & args]
-  (->> (apply q query db args)
+  (->> (apply d/q query db args)
        (mapv first)))
 
 (defn maybe
@@ -68,10 +68,10 @@
    any values for attr. Cardinality-many attributes will be
    returned as a set"
   [db e attr if-not]
-  (let [result (q '[:find ?v
-                    :in $ ?e ?a
-                    :where [?e ?a ?v]]
-                  db e attr)]
+  (let [result (d/q '[:find ?v
+                      :in $ ?e ?a
+                      :where [?e ?a ?v]]
+                    db e attr)]
     (if (seq result)
       (case (schema/cardinality db attr)
             :db.cardinality/one (ffirst result)

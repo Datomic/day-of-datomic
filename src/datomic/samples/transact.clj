@@ -7,14 +7,14 @@
 ;   You must not remove this notice, or any other, from this software.
 
 (ns datomic.samples.transact
-  (:use [datomic.api :only (q db) :as d]
-        datomic.samples.query))
+  (:require [datomic.api :as d]
+            [datomic.samples.query :as q]))
 
 (defn install
   "Install txdata and return the single new entity possessing attr"
   [conn txdata attr]
   (let [t (d/basis-t (:db-after @(d/transact conn txdata)))]
-    (qe '[:find ?e
-          :in $ ?attr ?t
-          :where [?e ?attr _ ?t]]
-        (db conn) attr (d/t->tx t))))
+    (q/qe '[:find ?e
+            :in $ ?attr ?t
+            :where [?e ?attr _ ?t]]
+          (d/db conn) attr (d/t->tx t))))

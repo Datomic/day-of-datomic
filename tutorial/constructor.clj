@@ -21,34 +21,34 @@
               :db/cardinality :db.cardinality/one,
               :db/index true,
               :db.install/_attribute :db.part/db}])
-(transact conn schema)
+(d/transact conn schema)
 
 (def construct-user-map
   "Returns map that could be added to transaction data to create
    a new user, or nil if user exists"
   #db/fn {:lang :clojure
           :params [db id email name]
-          :code (when-not (seq (q '[:find ?e
-                                    :in $ ?email
-                                    :where [?e :user/email ?email]]
-                                  db email))
+          :code (when-not (seq (d/q '[:find ?e
+                                      :in $ ?email
+                                      :where [?e :user/email ?email]]
+                                    db email))
                   {:db/id id
                    :user/email email
                    :user/name name})})
 
 ;; get a database *value* for testing construct-user-map
 ;; all tests can be of pure functions!
-(def dbval (db conn))
+(def dbval (d/db conn))
 
 ;; create a map for jdoe
-(def construct-jdoe (construct-user-map dbval (tempid :db.part/user) "jdoe@example.com" "John Doe"))
+(def construct-jdoe (construct-user-map dbval (d/tempid :db.part/user) "jdoe@example.com" "John Doe"))
 
 ;; another database *value*
-(def db-with-jdoe (with dbval [construct-jdoe]))
+(def db-with-jdoe (d/with dbval [construct-jdoe]))
 
 ;; jdoe already exists, should return nil
 (construct-user-map db-with-jdoe
-                    (tempid :db.part/user)
+                    (d/tempid :db.part/user)
                     "jdoe@example.com"
                     "Jonathan Doe")
 
@@ -62,26 +62,26 @@
                     {:user/name ["Username must be between 3 and 15 characters"]}))})
 
 ;; jdoe is valid, should return nil
-(user-errors db construct-jdoe)
+(user-errors dbval construct-jdoe)
 
 ;; validation failure
-(user-errors db (construct-user-map dbval (tempid :db.part/user) "jdoe@example.com"
+(user-errors dbval (construct-user-map dbval (d/tempid :db.part/user) "jdoe@example.com"
                                     "John WhoHasAnOverlyLongName"))
 
 ;; install the construct and validate functions in the database
-(transact conn [{:db/id (tempid :db.part/user)
-                 :db/ident :user/construct-map
-                 :db/fn construct-user-map}
-                {:db/id (tempid :db.part/user)
-                 :db/ident :user/errors
-                 :db/fn user-errors}])
+(d/transact conn [{:db/id (d/tempid :db.part/user)
+                   :db/ident :user/construct-map
+                   :db/fn construct-user-map}
+                  {:db/id (d/tempid :db.part/user)
+                   :db/ident :user/errors
+                   :db/fn user-errors}])
 
 ;; another database value
-(def db-with-fns (db conn))
+(def db-with-fns (d/db conn))
 
 ;; double check invoking from database
-(invoke db-with-fns :user/construct-map db-with-fns (tempid :db.part/user) "jdoe@example.com" "John Doe")
-(invoke db-with-fns :user/errors db-with-fns construct-jdoe)
+(d/invoke db-with-fns :user/construct-map db-with-fns (d/tempid :db.part/user) "jdoe@example.com" "John Doe")
+(d/invoke db-with-fns :user/errors db-with-fns construct-jdoe)
 
 (def create-user
   "Returns transaction data to create a new user, throwing
@@ -96,20 +96,20 @@
                                   {:user/email ["Already exists"]})))})
 
 ;; create with validation
-(create-user db-with-fns (tempid :db.part/user) "jdoe@example.com" "John Doe")
+(create-user db-with-fns (d/tempid :db.part/user) "jdoe@example.com" "John Doe")
 
 ;; should fail with exception
-(-> (create-user db-with-fns (tempid :db.part/user) "jdoe@example.com" "John WithOverlyLongLastName")
+(-> (create-user db-with-fns (d/tempid :db.part/user) "jdoe@example.com" "John WithOverlyLongLastName")
     should-throw)
 
 ;; install the create function in the database
-(transact conn [{:db/id (tempid :db.part/user)
+(d/transact conn [{:db/id (d/tempid :db.part/user)
                  :db/ident :user/create
                  :db/fn create-user}])
 
 
 ;; create John Doe. Tada!
-(transact conn [[:user/create (tempid :db.part/user) "jdoe@example.com" "John Doe"]])
+(d/transact conn [[:user/create (d/tempid :db.part/user) "jdoe@example.com" "John Doe"]])
 
 ;; Where are we?
 ;; Note that all three functions (user/construct-map, user/errors, and
@@ -135,30 +135,30 @@
                      :db/cardinality :db.cardinality/one,
                      :db/index true,
                      :db.install/_attribute :db.part/db}])
-(transact conn legacy-schema)
+(d/transact conn legacy-schema)
 
 ;; because we designed our data functions to be explicit about
 ;; databases and ids, we can compose new information about users
 ;; without touching the code for user/create:
 
 (def jane-uuid #uuid "5083ec09-61b3-4d6d-a945-78c4db0cec06")
-(let [id (tempid :db.part/user)]
-  (transact conn [[:user/create id "janedoe@example.com" "Jane Doe"]
+(let [id (d/tempid :db.part/user)]
+  (d/transact conn [[:user/create id "janedoe@example.com" "Jane Doe"]
                   [:db/add id :legacy/uuid jane-uuid]
                   [:db/add id :db/doc "Jane was in legacy system..."]]))
 
 
 ;; Enhancement request: Batch user creation into a larger transaction
 ;; Effort required: none
-(transact conn [[:user/create (tempid :db.part/user) "jack@example.com" "Jack Doe"]
-                [:user/create (tempid :db.part/user) "jill@example.com" "Jill Doe"]])
+(d/transact conn [[:user/create (d/tempid :db.part/user) "jack@example.com" "Jack Doe"]
+                  [:user/create (d/tempid :db.part/user) "jill@example.com" "Jill Doe"]])
 
 
 ;; Enhancement request: Record user creation requests now, play them
 ;; back later.
 ;; Effort required: none
-(def recorded-tx [[:user/create (tempid :db.part/user) "jebd@example.com" "Jebediah Doe"]])
-(transact conn recorded-tx)
+(def recorded-tx [[:user/create (d/tempid :db.part/user) "jebd@example.com" "Jebediah Doe"]])
+(d/transact conn recorded-tx)
 
 ;; Enhancement request: Decouple user creation from the user interface
 ;; using a queue.

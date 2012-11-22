@@ -24,7 +24,7 @@
           [?e :hasRoleInGroups ?roleInGroup]
           [?roleInGroup :hasGroups ?group]
           [?group :group/name "Group2"]]
-        (db conn))))
+        (d/db conn))))
 
 (defpp all-groups-and-roles-for-user-1
   (touch-names
@@ -35,7 +35,7 @@
           [?roleInGroup :hasGroups ?group]
           [?roleInGroup :hasRoles ?role]
           [?group :group/name]]
-        (db conn))))
+        (d/db conn))))
 
 
 

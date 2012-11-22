@@ -17,9 +17,9 @@
 (source qes)
 (defpp all-stories
   "All stories"
-  (qes '[:find ?e :where [?e :story/url]] (db conn)))
+  (qes '[:find ?e :where [?e :story/url]] (d/db conn)))
 
-(defpp new-user-id (tempid :db.part/user))
+(defpp new-user-id (d/tempid :db.part/user))
 
 (defpp upvote-all-stories
   "Transaction data for new-user-id to upvote all stories"
@@ -53,14 +53,14 @@
 
 (defpp john
   (qe '[:find ?e :where [?e :user/email "john@example.com"]]
-      (db conn)))
+      (d/db conn)))
 
 (defpp johns-upvote-for-pg
   (qe '[:find ?story
         :in $ ?e
         :where [?e :user/upVotes ?story]
         [?story :story/url "http://www.paulgraham.com/avg.html"]]
-      (db conn)
+      (d/db conn)
       (:db/id john)))
 
 (defpp john-retracts-upvote-result
@@ -69,16 +69,16 @@
    [[:db/retract (:db/id john) :user/upVotes (:db/id johns-upvote-for-pg)]]))
 
 (defpp john
-  (find-by (db conn) :user/email "john@example.com"))
+  (find-by (d/db conn) :user/email "john@example.com"))
 
 ;; should now be only two, since one was retracted
 (get john :user/upVotes)
 
 (defpp data-that-retracts-johns-upvotes
-  (->> (q '[:find ?op ?e ?a ?v
+  (->> (d/q '[:find ?op ?e ?a ?v
             :in $ ?op ?e ?a
             :where [?e ?a ?v]]
-          (db conn)
+          (d/db conn)
           :db/retract
           (:db/id john)
           :user/upVotes)
@@ -87,7 +87,7 @@
 (d/transact conn data-that-retracts-johns-upvotes)
 
 (defpp john
-  (find-by (db conn) :user/email "john@example.com"))
+  (find-by (d/db conn) :user/email "john@example.com"))
 
 ;; all gone
 (get john :user/upVotes)
@@ -101,19 +101,19 @@
   (d/transact conn ten-new-users))
 
 ;; how many users are there? 
-(count (q '[:find ?e ?v :where [?e :user/email ?v]] (db conn)))
+(count (d/q '[:find ?e ?v :where [?e :user/email ?v]] (d/db conn)))
 
 ;; how many users have upvoted something?
-(count (q '[:find ?e
+(count (d/q '[:find ?e
             :where [?e :user/email]
                    [?e :user/upVotes]]
-          (db conn)))
+          (d/db conn)))
 
 ;; Datomic does not need a left join to keep entities missing
 ;; some attribute. Just leave that attribute out of the query,
 ;; and then ask for it on the entity.
 (defpp users-with-emails-and-upvotes
-  (->> (find-all-by (db conn) :user/email)
+  (->> (find-all-by (d/db conn) :user/email)
        (mapv
         (fn [[ent]]                                
           {:email (:user/email ent)
@@ -122,8 +122,8 @@
 
 ;; find all users and their upvotes, using data function maybe
 ;; to simulate outer join
-(q '[:find ?email ?upvote
+(d/q '[:find ?email ?upvote
      :where
      [?e :user/email ?email]
      [(datomic.samples.query/maybe $ ?e :user/upVotes :none) ?upvote]]
-   (db conn))
+   (d/db conn))

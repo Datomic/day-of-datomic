@@ -31,12 +31,12 @@
 ;; install the function in a database, under the name :hello
 (d/transact
  conn
- [{:db/id (tempid :db.part/user)
+ [{:db/id (d/tempid :db.part/user)
    :db/doc "Example function returning a greeting"
    :db/ident :hello
    :db/fn hello}])
 
-(def dbval (db conn))
+(def dbval (d/db conn))
 
 ;; retrieve function from db and call it
 (def hello-from-db (d/entity dbval :hello))
@@ -81,7 +81,7 @@
       :user/lastName "Doe"}]]))
 
 ;; get a person from the database
-(def john (find-by (db conn) :user/email "jdoe@example.com"))
+(def john (find-by (d/db conn) :user/email "jdoe@example.com"))
 
 ;; get a view helper function from the database
 (def display-name

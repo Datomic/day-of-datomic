@@ -7,17 +7,17 @@
 ;   You must not remove this notice, or any other, from this software.
 
 (ns datomic.samples.unique
-  (:require [clojure.set :as set])
-  (:use [datomic.api :only (q db) :as d]))
+  (:require [clojure.set :as set]
+            [datomic.api :as d]))
 
 (defn existing-values
   "Returns subset of values that already exist as unique
    attribute attr in db"
   [db attr vals]
-  (->> (q '[:find ?val
-            :in $ ?attr [?val ...]
-            :where [_ ?attr ?val]]
-          db attr vals)
+  (->> (d/q '[:find ?val
+              :in $ ?attr [?val ...]
+              :where [_ ?attr ?val]]
+            db attr vals)
        (map first)
        (into #{})))
 
@@ -27,7 +27,7 @@
    Returns transaction result or nil if nothing to assert."
   [conn part attr emaps]
   (let [vals (mapv attr emaps)
-        existing (existing-values (db conn) attr vals)]
+        existing (existing-values (d/db conn) attr vals)]
     (when-not (= (count existing) (count vals))
       (->> emaps
            (remove #(existing (get attr %)))

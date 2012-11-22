@@ -57,9 +57,22 @@
   :db/cardinality :db.cardinality/one
   :db.install/_attribute :db.part/db}
  {:db/id #db/id[:db.part/db]
+  :db/ident :user/passwordHash
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db.install/_attribute :db.part/db} 
+ {:db/id #db/id[:db.part/db]
   :db/ident :user/upVotes
   :db/valueType :db.type/ref
   :db/cardinality :db.cardinality/many
+  :db.install/_attribute :db.part/db}
+
+ ;; publish time
+ {:db/id #db/id[:db.part/db]
+  :db/ident :publish/at
+  :db/valueType :db.type/instant
+  :db/cardinality :db.cardinality/one
+  :db/index true
   :db.install/_attribute :db.part/db}]
 
 ;; stories

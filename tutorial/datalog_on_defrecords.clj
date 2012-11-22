@@ -25,16 +25,16 @@
 
 (defpp
   query-on-defrecord-results
-  (q '[:find ?name
-       :where ["Paris" ?name]]
-     (maps->rel suppliers [:city :name])))
+  (d/q '[:find ?name
+         :where ["Paris" ?name]]
+       (maps->rel suppliers [:city :name])))
 
 (defpp
   join-on-defrecord-results
-  (q '[:find ?name
-       :in $suppliers $shipments
-       :where
-       [$suppliers ?supplier ?name "Paris"]
-       [$shipments ?supplier]]
-     (maps->rel suppliers [:number :name :city])
-     (maps->rel shipments [:supplier])))
+  (d/q '[:find ?name
+         :in $suppliers $shipments
+         :where
+         [$suppliers ?supplier ?name "Paris"]
+         [$shipments ?supplier]]
+       (maps->rel suppliers [:number :name :city])
+       (maps->rel shipments [:supplier])))

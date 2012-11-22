@@ -1,7 +1,8 @@
 (ns datomic.samples.generators
-  (:use [datomic.api :only (q db) :as d]
-        datomic.samples.query)
-  (:require [clojure.test.generative.generators :as gen]))
+  (:require
+   [clojure.data.generators :as gen]
+   [datomic.api :as d]
+   [datomic.samples.query :as q]))
 
 (defn choose-some
   "Pick zero or more items at random from a collection"
@@ -15,7 +16,7 @@
   (mapcat
    (fn [n]
      (let [user-id (d/tempid :db.part/user)
-           upvotes (map (fn [story] [:db/add user-id :user/upVotes (e story)])
+           upvotes (map (fn [story] [:db/add user-id :user/upVotes (q/e story)])
                         (choose-some stories))]
        (conj
         upvotes
