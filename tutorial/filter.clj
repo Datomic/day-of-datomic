@@ -25,7 +25,7 @@
 
 ;; filtered db cannot
 (def password-hash-id (d/entid plain-db :user/passwordHash))
-(def password-hash-filter (fn [^Datom datom] (not= password-hash-id (.a datom))))
+(def password-hash-filter (fn [_ ^Datom datom] (not= password-hash-id (.a datom))))
 (def filtered-db (d/filter (d/db conn) password-hash-filter))
 (d/q '[:find ?v :where [_ :user/passwordHash ?v]] filtered-db)
 (d/touch (q/find-by filtered-db :user/email "jdoe@example.com"))
@@ -58,9 +58,9 @@
 (d/q '[:find (count ?e) :where [?e :story/url]]
      plain-db)
 
-;; same query, filtered to stories with a publish/at in the past
-(def filtered-db (d/filter plain-db (fn [^Datom datom]
-                                      (-> (d/entity plain-db (.tx datom))
+;; same query, filtered to stories that have been published.
+(def filtered-db (d/filter plain-db (fn [db ^Datom datom]
+                                      (-> (d/entity db (.tx datom))
                                           :publish/at))))
 (d/q '[:find (count ?e) :where [?e :story/url]]
      filtered-db)
