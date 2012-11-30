@@ -50,6 +50,7 @@ public class GettingStarted {
 
 	    Reader schema_rdr = new FileReader("samples/seattle/seattle-schema.dtm");
 	    List schema_tx = (List) Util.readAll(schema_rdr).get(0);
+	    schema_rdr.close();
 	    Object txResult = conn.transact(schema_tx).get();
 	    System.out.println(txResult);
 
