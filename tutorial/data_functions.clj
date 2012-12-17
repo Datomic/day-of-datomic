@@ -1,5 +1,5 @@
 ;; work through at the REPL, evaulating each form
-(use :reload 'datomic.samples.repl)
+(use 'datomic.samples.repl)
 (easy!)
 
 (def conn (scratch-conn))

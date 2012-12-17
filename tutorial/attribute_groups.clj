@@ -1,6 +1,6 @@
 ;; You can use rules to develop queries that match the same criterion
 ;; against a group of attributes
-(use :reload 'datomic.samples.repl)
+(use 'datomic.samples.repl)
 (easy!)
 (def conn (scratch-conn))
 

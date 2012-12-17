@@ -1,4 +1,4 @@
-(use :reload 'datomic.samples.repl)
+(use 'datomic.samples.repl)
 (easy!)
 
 ;; inspired by http://www.lshift.net/blog/2010/08/21/some-relational-algebra-with-datatypes-in-clojure-12

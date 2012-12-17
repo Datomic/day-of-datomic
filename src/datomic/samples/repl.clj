@@ -10,10 +10,12 @@
   (:use [datomic.api :only (q db) :as d])
   (:require [clojure.pprint :as pprint]))
 
+(def db-uri-base "datomic:mem://")
+
 (defn scratch-conn
   "Create a connection to an anonymous, in-memory database."
   []
-  (let [uri (str "datomic:mem://" (d/squuid))]
+  (let [uri (str db-uri-base (d/squuid))]
     (d/delete-database uri)
     (d/create-database uri)
     (d/connect uri)))
@@ -30,7 +32,6 @@
           'datomic.samples.query
           'datomic.samples.generators
           'datomic.samples.transact
-          'datomic.samples.incanter
           'datomic.samples.schema
           'clojure.repl
           'clojure.pprint)
