@@ -29,7 +29,7 @@
 ;; you will typically want a ":with ?someentity" when computing
 ;; aggregates, where ?someentity owns the values you are aggregating
 ;; over.
-(d/q '[:find (count ?heads)
+(d/q '[:find (sum ?heads)
        :with ?monster
        :in [[?monster ?heads]]]
      monsters)

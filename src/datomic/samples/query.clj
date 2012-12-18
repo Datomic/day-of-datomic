@@ -78,3 +78,15 @@
             :db.cardinality/many (into #{} (map first result)))
       if-not)))
 
+(defn modes
+  "Returns the set of modes."
+  [coll]
+  (->> (frequencies coll)
+       (reduce
+        (fn [[modes ct] [k v]]
+          (cond
+           (< v ct)  [modes ct]
+           (= v ct)  [(conj modes k) ct]
+           (> v ct) [#{k} v]))
+        [#{} 2])
+       first))
