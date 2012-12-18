@@ -9,7 +9,7 @@
 (d/create-database uri)
 (def conn (d/connect uri))
 
-(dio/transact-all conn (io/resource "day-of-datomic/social-news.dtm"))
+(dio/transact-all conn (io/resource "day-of-datomic/social-news.edn"))
 
 (d/transact conn [{:db/id (d/tempid :db.part/user)
                    :user/firstName "John"

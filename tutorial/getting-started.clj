@@ -16,8 +16,8 @@
 ;; connect to database
 (def conn (d/connect uri))
 
-;; parse schema dtm file
-(def schema-tx (read-string (slurp "samples/seattle/seattle-schema.dtm")))
+;; parse schema edn file
+(def schema-tx (read-string (slurp "samples/seattle/seattle-schema.edn")))
 
 ;; display first statement
 (first schema-tx)
@@ -25,8 +25,8 @@
 ;; submit schema transaction
 @(d/transact conn schema-tx)
 
-;; parse seed data dtm file
-(def data-tx (read-string (slurp "samples/seattle/seattle-data0.dtm")))
+;; parse seed data edn file
+(def data-tx (read-string (slurp "samples/seattle/seattle-data0.edn")))
 
 ;; display first three statements in seed data transaction
 (first data-tx)
@@ -277,7 +277,7 @@
 
 
 ;; parse additional seed data file
-(def new-data-tx (read-string (slurp "samples/seattle/seattle-data1.dtm")))
+(def new-data-tx (read-string (slurp "samples/seattle/seattle-data1.edn")))
 
 ;; find all communities if new data is loaded
 (let [db-if-new-data (-> conn d/db (d/with new-data-tx) :db-after)]

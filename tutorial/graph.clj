@@ -4,7 +4,7 @@
 (easy!)
 
 (def conn (scratch-conn))
-(transact-all conn (io/resource "day-of-datomic/graph.dtm"))
+(transact-all conn (io/resource "day-of-datomic/graph.edn"))
 
 (def name-attrs [:group/name :role/name :user/name :roleInGroup/name])
 

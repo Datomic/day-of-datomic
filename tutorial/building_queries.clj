@@ -2,7 +2,7 @@
 (easy!)
 
 (def conn (scratch-conn))
-(transact-all conn (io/resource "day-of-datomic/social-news.dtm"))
+(transact-all conn (io/resource "day-of-datomic/social-news.edn"))
 
 ;; some St*rts
 (d/transact conn [{:db/id #db/id [:db.part/user]

@@ -46,9 +46,9 @@ public class GettingStarted {
 	    pause();
 
 
-	    System.out.println("Parsing schema dtm file and running transaction...");
+	    System.out.println("Parsing schema edn file and running transaction...");
 
-	    Reader schema_rdr = new FileReader("samples/seattle/seattle-schema.dtm");
+	    Reader schema_rdr = new FileReader("samples/seattle/seattle-schema.edn");
 	    List schema_tx = (List) Util.readAll(schema_rdr).get(0);
 	    Object txResult = conn.transact(schema_tx).get();
 	    System.out.println(txResult);
@@ -56,9 +56,9 @@ public class GettingStarted {
 	    pause();
 
 
-	    System.out.println("Parsing seed data dtm file and running transaction...");
+	    System.out.println("Parsing seed data edn file and running transaction...");
 
-	    Reader data_rdr = new FileReader("samples/seattle/seattle-data0.dtm");
+	    Reader data_rdr = new FileReader("samples/seattle/seattle-data0.edn");
 	    List data_tx = (List) Util.readAll(data_rdr).get(0);
 	    data_rdr.close();
 	    txResult = conn.transact(data_tx).get();
@@ -391,7 +391,7 @@ public class GettingStarted {
 
 	    System.out.println("Parse additional seed data file...");
 
-	    data_rdr = new FileReader("samples/seattle/seattle-data1.dtm");
+	    data_rdr = new FileReader("samples/seattle/seattle-data1.edn");
 	    List new_data_tx = (List) Util.readAll(data_rdr).get(0);
 
 	    System.out.println("\nFind all communities if new data is loaded...");

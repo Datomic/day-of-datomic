@@ -4,7 +4,7 @@
 (easy!)
 (def conn (scratch-conn))
 
-(transact-all conn (io/resource "day-of-datomic/social-news.dtm"))
+(transact-all conn (io/resource "day-of-datomic/social-news.edn"))
 
 ;; find all attributes in the story namespace
 (d/q '[:find ?e

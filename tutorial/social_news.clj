@@ -11,7 +11,7 @@
 
 (doc transact-all)
 
-(transact-all conn (io/resource "day-of-datomic/social-news.dtm"))
+(transact-all conn (io/resource "day-of-datomic/social-news.edn"))
 
 (doc qes)
 (source qes)

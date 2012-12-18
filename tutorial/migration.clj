@@ -3,7 +3,7 @@
 
 (def conn (scratch-conn))
 
-(def schema-map (read-string (slurp (io/resource "day-of-datomic/schema.dtm"))))
+(def schema-map (read-string (slurp (io/resource "day-of-datomic/schema.edn"))))
 
 (has-attribute? (d/db conn) :story/title)
 

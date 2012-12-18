@@ -3,7 +3,7 @@
 
 (def conn (scratch-conn))
 
-(transact-all conn (io/resource "day-of-datomic/bigger-than-pluto.dtm"))
+(transact-all conn (io/resource "day-of-datomic/bigger-than-pluto.edn"))
 (def db (d/db conn))
 
 ;; how many objects are there?

@@ -3,8 +3,8 @@
 (easy!)
 
 (def conn (scratch-conn))
-(transact-all conn (io/resource "day-of-datomic/social-news.dtm"))
-(transact-all conn (io/resource "day-of-datomic/clojure-data-functions.dtm"))
+(transact-all conn (io/resource "day-of-datomic/social-news.edn"))
+(transact-all conn (io/resource "day-of-datomic/clojure-data-functions.edn"))
 
 (dir datomic.api)
 

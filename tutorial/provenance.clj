@@ -2,8 +2,8 @@
 (easy!)
 
 (def conn (scratch-conn))
-(transact-all conn (io/resource "day-of-datomic/social-news.dtm"))
-(transact-all conn (io/resource "day-of-datomic/provenance.dtm"))
+(transact-all conn (io/resource "day-of-datomic/social-news.edn"))
+(transact-all conn (io/resource "day-of-datomic/provenance.edn"))
 
 (defpp stu (qe '[:find ?e :where [?e :user/email "stuarthalloway@datomic.com"]]
              (d/db conn)))
