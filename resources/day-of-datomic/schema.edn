@@ -4,11 +4,17 @@
            :db/ident :source/user
            :db/valueType :db.type/ref
            :db/cardinality :db.cardinality/one
+           :db.install/_attribute :db.part/db}
+          {:db/id #db/id[:db.part/db]
+           :db/ident :source/confidence
+           :db/valueType :db.type/long
+           :db/cardinality :db.cardinality/one
+           :db/doc "Confidence in the source of this information, from 0 to 100"
            :db.install/_attribute :db.part/db}]]}
  :day-of-datomic/social-news
  {:txes 
   [[ ;; stories
-     {:db/id #db/id[:db.part/db]
+    {:db/id #db/id[:db.part/db]
       :db/ident :story/title
       :db/valueType :db.type/string
       :db/cardinality :db.cardinality/one
