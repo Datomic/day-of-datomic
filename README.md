@@ -24,6 +24,10 @@ evaluating each form at the REPL. You might start with:
 * binding.clj
 * graph.clj
 
+You can also run all of the examples and see their output by running:
+
+    lein run -m datomic.samples.tutorials
+
 ## Study the Samples
 
 As or after you work through the tutorial, you may want to also study
@@ -32,7 +36,7 @@ the helper functions in src/datomic/samples.
 ## Questions, Feedback?
 
 For specific feedback on the tutorials, please create an
-[issue](https://github.com/Datomic/day-of-datomic/issues). 
+[issue](https://github.com/Datomic/day-of-datomic/issues).
 
 For questions about Datomic, try the [public mailing
 list](http://groups.google.com/group/datomic).
