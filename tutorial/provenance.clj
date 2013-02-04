@@ -68,5 +68,21 @@
      (sort-by #(nth % 3))
      pprint)
 
+(def story (qe '[:find ?e :where [?e :story/url "http://blog.datomic.com/2012/09/elasticache-in-5-minutes.html"]]
+               (d/db conn)))
+
+;; what is the entire history of entity e?
+(->> (d/q '[:find ?aname ?v ?tx ?inst ?added
+            :in $ ?e
+            :where
+            [?e ?a ?v ?tx ?added]
+            [?a :db/ident ?aname]
+            [?tx :db/txInstant ?inst]]
+          (d/history (d/db conn))
+          (:db/id story))
+     seq
+     (sort-by #(nth % 2))
+     pprint)
+
 
 
