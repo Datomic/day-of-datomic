@@ -24,7 +24,7 @@
                                 :code '(println :hello)}}])
 
 ;; corrected: used d/function to construct function
-(transact conn [{:db/id #db/id [:db.part/user]
+(transact conn [{:db/id (d/tempid :db.part/user)
                  :db/ident :hello
                  :db/fn (d/function {:lang "clojure"
                                      :params []
