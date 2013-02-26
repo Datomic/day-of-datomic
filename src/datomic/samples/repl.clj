@@ -51,7 +51,6 @@
      (pprint/pprint ~name)
      (var ~name)))
 
-
 (defn transcript
   "Run all forms, printing a transcript as if forms were
    individually entered interactively at the REPL."

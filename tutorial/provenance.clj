@@ -83,6 +83,3 @@
      seq
      (sort-by #(nth % 2))
      pprint)
-
-
-
