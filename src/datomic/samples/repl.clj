@@ -7,8 +7,8 @@
 ;   You must not remove this notice, or any other, from this software.
 
 (ns datomic.samples.repl
-  (:use [datomic.api :only (q db) :as d])
-  (:require [clojure.pprint :as pprint]))
+  (:require [clojure.pprint :as pprint]
+            [datomic.api :as d]))
 
 (def db-uri-base "datomic:mem://")
 
@@ -24,7 +24,7 @@
   "Set up a bunch of REPL conveniences. See the source
    with (source easy!) for details."
   []
-  `(do
+  '(do
      #_(set! *warn-on-reflection* true)
      (set! *print-length* 20)
      (use 'datomic.samples.datalog
@@ -36,11 +36,11 @@
           'clojure.repl
           'clojure.pprint)
      (require
-      '[clojure.string :as ~'str]
-      '[clojure.java.io :as ~'io]
-      '[clojure.pprint :as ~'pprint]
-      '[clojure.data.generators :as ~'gen]
-      '[datomic.api :as ~'d])
+      '[clojure.string :as str]
+      '[clojure.java.io :as io]
+      '[clojure.pprint :as pprint]
+      '[clojure.data.generators :as gen]
+      '[datomic.api :as d])
      :awesome))
 
 (defmacro defpp
