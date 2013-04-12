@@ -7,8 +7,8 @@
 ;   You must not remove this notice, or any other, from this software.
 
 (ns datomic.samples.io
-  (:use [datomic.api :only (q db) :as d])
-  (:require [clojure.java.io :as io])
+  (:require [clojure.java.io :as io]
+            [datomic.api :as d])
   (:import datomic.Util))
 
 (defn read-all
