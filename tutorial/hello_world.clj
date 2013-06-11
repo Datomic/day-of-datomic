@@ -1,4 +1,4 @@
-(use '[datomic.api :only (q db) :as d])
+(require '[datomic.api :as d])
 (def uri "datomic:mem://hello")
 (d/create-database uri)
 (def conn (d/connect uri))
@@ -15,12 +15,12 @@
 ;; transaction result is data
 tx-result
 
-(def dbval (db conn))
+(def dbval (d/db conn))
 
 ;; query input is data
-(def q-result (q '[:find ?e
-                   :where [?e :db/doc "Hello world"]]
-                 dbval))
+(def q-result (d/q '[:find ?e
+                     :where [?e :db/doc "Hello world"]]
+                   dbval))
 
 ;; query result is data
 q-result
