@@ -139,17 +139,6 @@
 ;; find all communities that are non-commercial email-lists or commercial
 ;; web-sites using a list of tuple parameters
 (pprint (seq (q '[:find ?n ?t ?ot
-                      :in $ [?t ?ot]
-                      :where
-                      [?c :community/name ?n]
-                      [?c :community/type ?t]
-                      [?c :community/orgtype ?ot]]
-                    (db conn)
-                    [:community.type/email-list :community.orgtype/community])))
-
-;; find all communities that are non-commercial email-lists or commercial
-;; web-sites using a list of tuple parameters
-(pprint (seq (q '[:find ?n ?t ?ot
                       :in $ [[?t ?ot]]
                       :where
                       [?c :community/name ?n]
@@ -159,43 +148,42 @@
                     [[:community.type/email-list :community.orgtype/community]
                      [:community.type/website :community.orgtype/commercial]])))
 
-;; find all community names coming after "C" in alphabetical order
+;; find all community names coming before "C" in alphabetical order
 (pprint (seq (q '[:find ?n
-                      :where
-                      [?c :community/name ?n]
-                      [(.compareTo ?n "C") ?res]
-                      [(< ?res 0)]]
-                    (db conn))))
+                  :where
+                  [?c :community/name ?n]
+                  [(.compareTo ?n "C") ?res]
+                  [(< ?res 0)]]
+                (db conn))))
 
 ;; find all communities whose names include the string "Wallingford"
 (pprint (seq (q '[:find ?n
-                      :where
-                      [(fulltext $ :community/name "Wallingford") [[?e ?n]]]]
-                    (db conn))))
-
+                  :where
+                  [(fulltext $ :community/name "Wallingford") [[?e ?n]]]]
+                (db conn))))
 
 ;; find all communities that are websites and that are about
 ;; food, passing in type and search string as parameters
 (pprint (seq (q '[:find ?name ?cat
-                      :in $ ?type ?search
-                      :where
-                      [?c :community/name ?name]
-                      [?c :community/type ?type]
-                      [(fulltext $ :community/category ?search) [[?c ?cat]]]]
-                    (db conn)
-                    :community.type/website
-                    "food")))
+                  :in $ ?type ?search
+                  :where
+                  [?c :community/name ?name]
+                  [?c :community/type ?type]
+                  [(fulltext $ :community/category ?search) [[?c ?cat]]]]
+                (db conn)
+                :community.type/website
+                "food")))
 
 ;; find all names of all communities that are twitter feeds, using rules
 (let [rules '[[[twitter ?c]
                [?c :community/type :community.type/twitter]]]]
   (pprint (seq (q '[:find ?n
-                        :in $ %
-                        :where
-                        [?c :community/name ?n]
-                        (twitter ?c)]
-                      (db conn)
-                      rules))))
+                    :in $ %
+                    :where
+                    [?c :community/name ?n]
+                    (twitter ?c)]
+                  (db conn)
+                  rules))))
 
 ;; find names of all communities in NE and SW regions, using rules
 ;; to avoid repeating logic
@@ -246,7 +234,7 @@
                     :in $ %
                     :where
                     [?c :community/name ?n]
-                    (northern ?c)
+                    (southern ?c)
                     (social-media ?c)]
                   (db conn)
                   rules))))
@@ -271,6 +259,10 @@
 (let [db-asof-data (-> conn db (d/as-of data-tx-date))]
   (println (count (seq (q communities-query db-asof-data)))))
 
+;; find all communities since schema transaction
+(let [db-since-data (-> conn db (d/since schema-tx-date))]
+  (println (count (seq (q communities-query db-since-data)))))
+
 ;; find all communities since seed data transaction
 (let [db-since-data (-> conn db (d/since data-tx-date))]
   (println (count (seq (q communities-query db-since-data)))))
@@ -280,7 +272,7 @@
 (def new-data-tx (read-string (slurp "samples/seattle/seattle-data1.edn")))
 
 ;; find all communities if new data is loaded
-(let [db-if-new-data (-> conn db (d/with new-data-tx))]
+(let [db-if-new-data (-> conn db (d/with new-data-tx) :db-after)]
   (println (count (seq (q communities-query db-if-new-data)))))
 
 ;; find all communities currently in database
@@ -299,11 +291,11 @@
 
 ;; make a new partition
 @(d/transact conn [{:db/id (d/tempid :db.part/db)
-                      :db/ident :events
+                      :db/ident :communities
                       :db.install/_partition :db.part/db}])
 
 ;; make a new community
-@(d/transact conn [{:db/id (d/tempid :db.part/user)
+@(d/transact conn [{:db/id (d/tempid :communities)
                       :community/name "Easton"}])
 
 ;; update data for a community
@@ -329,7 +321,7 @@
 ;; get transaction report queue, add new community again
 (def queue (d/tx-report-queue conn))
 
-@(d/transact conn [{:db/id (d/tempid :db.part/user)
+@(d/transact conn [{:db/id (d/tempid :communities)
                       :community/name "Easton"}])
 
 (when-let [report (.poll queue)]

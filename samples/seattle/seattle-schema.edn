@@ -41,8 +41,8 @@
  {:db/id #db/id[:db.part/db]
   :db/ident :community/type
   :db/valueType :db.type/ref
-  :db/cardinality :db.cardinality/one
-  :db/doc "A community type enum value"
+  :db/cardinality :db.cardinality/many
+  :db/doc "Community type enum values"
   :db.install/_attribute :db.part/db}
 
  ;; community/org-type enum values
