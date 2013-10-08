@@ -1,8 +1,8 @@
 ;; This file contains code examples for getting-started.html. They are
 ;; written in clojure, for use with Datomic's interactive repl. You can
 ;; start the repl by running 'bin/repl' from the datomic directory.
-;; Once the repl is running, you can copy code into it or, if invoke it
-;; directory from your editor, based on your configuration.
+;; Once the repl is running, you can copy code into it or invoke it
+;; directly from your editor, based on your configuration.
 
 (use '[datomic.api :only [q db] :as d])
 (use 'clojure.pprint)
