@@ -159,7 +159,7 @@
                   [[:community.type/email-list :community.orgtype/community]
                    [:community.type/website :community.orgtype/commercial]])))
 
-;; find all community names coming after "C" in alphabetical order
+;; find all community names coming before "C" in alphabetical order
 (pprint (seq (d/q '[:find ?n
                     :where
                     [?c :community/name ?n]
@@ -340,5 +340,3 @@
                       [?a :db/ident ?aname]]
                     (:db-after report)
                     (:tx-data report)))))
-
-
