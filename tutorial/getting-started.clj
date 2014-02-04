@@ -50,7 +50,7 @@
 ;; display the value of the entity's community name
 (:community/name entity)
 
-;; for each community, display it's name
+;; for each community, display its name
 (let [db (d/db conn)]
   (pprint (map #(:community/name (d/entity db (first %))) results)))
 
@@ -62,9 +62,9 @@
                    (-> entity :community/neighborhood :neighborhood/name)])
                results)))
 
-;; for each community, get it's neighborhood, then for
-;; that neighborhood, get all it's communities, and
-;; print out there names
+;; for each community, get its neighborhood, then for
+;; that neighborhood, get all its communities, and
+;; print out their names
 (def community (d/entity (d/db conn) (ffirst results)))
 (def neighborhood (:community/neighborhood community))
 (def communities (:community/_neighborhood neighborhood))
