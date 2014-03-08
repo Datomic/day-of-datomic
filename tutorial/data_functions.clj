@@ -83,8 +83,12 @@
 ;; get a person from the database
 (def john (find-by (d/db conn) :user/email "jdoe@example.com"))
 
+;; get a person from the database - using lookup-ref
+(def john2 (find-by-lookup (d/db conn) :user/email "jdoe@example.com"))
+
 ;; get a view helper function from the database
 (def display-name
   (-> (d/entity dbval :displayName) :db/fn))
 
 (display-name john)
+(display-name john2)

@@ -41,6 +41,11 @@
         :where [?e ?attr ?val]]
       db attr val))
 
+(defn find-by-lookup
+  "Returns the unique entity identified by attr and val, using lookup-refs."
+  [db attr val]
+  (d/entity db [attr val]))
+
 (defn qes
   "Returns the entities returned by a query, assuming that
    all :find results are entity ids."
