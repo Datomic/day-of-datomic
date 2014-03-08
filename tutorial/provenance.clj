@@ -5,8 +5,8 @@
 (transact-all conn (io/resource "day-of-datomic/social-news.edn"))
 (transact-all conn (io/resource "day-of-datomic/provenance.edn"))
 
-(defpp stu (qe '[:find ?e :where [?e :user/email "stuarthalloway@datomic.com"]]
-             (d/db conn)))
+; use lookup-refs not a query... 
+(defpp stu (d/entity (d/db conn) [:user/email "stuarthalloway@datomic.com"]))
 
 ;; Stu loves to pimp his own blog posts...
 (defpp tx1-result (d/transact
@@ -29,8 +29,7 @@
 ;; wall clock time of tx
 (defpp inst (:db/txInstant tx))
 
-(defpp editor (qe '[:find ?e :where [?e :user/email "editor@example.com"]]
-                  (d/db conn)))
+(defpp editor (d/entity (d/db conn) [:user/email "editor@example.com"]))
 
 ;; fix spelling error in title
 ;; note auto-upsert and attribution
@@ -68,8 +67,12 @@
      (sort-by #(nth % 3))
      pprint)
 
+
 (def story (qe '[:find ?e :where [?e :story/url "http://blog.datomic.com/2012/09/elasticache-in-5-minutes.html"]]
                (d/db conn)))
+
+;you can use a look-ref here as well... excercise for the reader
+;(def story (d/entity (d/db conn) [:story/url "http://blog.datomic.com/2012/09/elasticache-in-5-minutes.html"]))
 
 ;; what is the entire history of entity e?
 (->> (d/q '[:find ?aname ?v ?tx ?inst ?added
