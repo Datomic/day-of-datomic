@@ -19,14 +19,14 @@
 (d/q '[:find ?comment
        :in $ ?email
        :where [?user :user/email ?email]
-       [?comment :comment/author ?user]]
+              [?comment :comment/author ?user]]
      db
      "editor@example.com")
 
 (d/q '[:find (count ?comment)
        :in $ ?email
        :where [?user :user/email ?email]
-       [?comment :comment/author ?user]]
+              [?comment :comment/author ?user]]
      db
      "editor@example.com")
 
@@ -45,14 +45,7 @@
        [?attr :db/ident ?attr-name]]
      db)
 
-(def editor-id (->> (d/q '[:find ?e
-                           :in $ ?email
-                           :where [?e :user/email ?email]]
-                         db
-                         "editor@example.com")
-                    ffirst))
-
-(def editor (d/entity db editor-id))
+(def editor (d/entity db [:user/email "editor@example.com"]))
 
 (:user/firstName editor)
 
