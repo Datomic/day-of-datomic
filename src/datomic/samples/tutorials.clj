@@ -1,7 +1,9 @@
 (ns datomic.samples.tutorials
   (:use datomic.samples.io
         datomic.samples.repl)
-  (:require [clojure.java.io :as io]))
+  (:require
+   [clojure.java.io :as io]
+   [datomic.api :as d]))
 
 (defn tutorial-seq
   []
@@ -14,4 +16,5 @@
   (doseq [file (tutorial-seq)]
     (println "\n;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;")
     (println ";; Transcript for " file)
-    (transcript (read-all (io/reader file)))))
+    (transcript (read-all (io/reader file)))
+    (d/shutdown true)))
