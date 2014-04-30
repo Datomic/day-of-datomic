@@ -83,7 +83,7 @@
             :where [?e ?attr ?v ?tx ?op]]
           hist
           editor-id
-          :user/firstName)
+          (d/entid db :user/firstName))
      (sort-by first))
 
 (d/q '[:find ?e

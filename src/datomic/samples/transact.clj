@@ -13,8 +13,9 @@
 (defn install
   "Install txdata and return the single new entity possessing attr"
   [conn txdata attr]
-  (let [t (d/basis-t (:db-after @(d/transact conn txdata)))]
+  (let [t  (d/basis-t (:db-after @(d/transact conn txdata)))
+        db (d/db conn)]
     (q/qe '[:find ?e
             :in $ ?attr ?t
             :where [?e ?attr _ ?t]]
-          (d/db conn) attr (d/t->tx t))))
+          db (d/entid db attr) (d/t->tx t))))

@@ -17,7 +17,7 @@
   (->> (d/q '[:find ?val
               :in $ ?attr [?val ...]
               :where [_ ?attr ?val]]
-            db attr vals)
+            db (d/entid db attr) vals)
        (map first)
        (into #{})))
 

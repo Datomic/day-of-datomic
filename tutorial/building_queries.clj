@@ -33,12 +33,13 @@
    ["Stewart" "Stuart"])
 
 ;; find all the Stewart/Stuart as either first name or last name
-(d/q '[:find ?e
-     :in $ [?name ...] [?attr ...]
-     :where [?e ?attr ?name]]
-   (d/db conn)
-   ["Stewart" "Stuart"]
-   [:user/firstName :user/lastName])
+(let [db (d/db conn)]
+  (d/q '[:find ?e
+         :in $ [?name ...] [?attr ...]
+         :where [?e ?attr ?name]]
+       db
+       ["Stewart" "Stuart"]
+       [(d/entid db :user/firstName) (d/entid db :user/lastName)]))
 
 ;; find only the Smalley Stuarts
 (d/q '[:find ?e

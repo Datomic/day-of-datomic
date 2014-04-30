@@ -39,7 +39,7 @@
   (qe '[:find ?e
         :in $ ?attr ?val
         :where [?e ?attr ?val]]
-      db attr val))
+      db (d/entid db attr) val))
 
 (defn qes
   "Returns the entities returned by a query, assuming that
@@ -55,7 +55,7 @@
   (qes '[:find ?e
          :in $ ?attr
          :where [?e ?attr]]
-       db attr))
+       db (d/entid db attr)))
 
 (defn qfs
   "Returns the first of each query result."
@@ -71,7 +71,7 @@
   (let [result (d/q '[:find ?v
                       :in $ ?e ?a
                       :where [?e ?a ?v]]
-                    db e attr)]
+                    db e (d/entid db attr))]
     (if (seq result)
       (case (schema/cardinality db attr)
             :db.cardinality/one (ffirst result)

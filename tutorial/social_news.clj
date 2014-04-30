@@ -75,14 +75,15 @@
 (get john :user/upVotes)
 
 (defpp data-that-retracts-johns-upvotes
-  (->> (d/q '[:find ?op ?e ?a ?v
-            :in $ ?op ?e ?a
-            :where [?e ?a ?v]]
-          (d/db conn)
-          :db/retract
-          (:db/id john)
-          :user/upVotes)
-       (into [])))
+  (let [db (d/db conn)]
+    (->> (d/q '[:find ?op ?e ?a ?v
+                :in $ ?op ?e ?a
+                :where [?e ?a ?v]]
+              db
+              :db/retract
+              (:db/id john)
+              (d/entid db :user/upVotes))
+         (into []))))
 
 (d/transact conn data-that-retracts-johns-upvotes)
 
