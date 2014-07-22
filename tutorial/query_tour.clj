@@ -6,16 +6,19 @@
 
 (def db (d/db conn))
 
+; Find all entities with an email attribute.
 (d/q '[:find ?e
        :where [?e :user/email]]
      db)
 
+; Only find users with "editor@example.com" as email.
 (d/q '[:find ?e
        :in $ ?email
        :where [?e :user/email ?email]]
      db
      "editor@example.com")
 
+; Find all comments made by user with "editor@example.com" as email.
 (d/q '[:find ?comment
        :in $ ?email
        :where [?user :user/email ?email]
@@ -23,6 +26,7 @@
      db
      "editor@example.com")
 
+; Use aggregator count to return count of comments instead of entity ids.
 (d/q '[:find (count ?comment)
        :in $ ?email
        :where [?user :user/email ?email]
@@ -30,6 +34,7 @@
      db
      "editor@example.com")
 
+; No commentable entity has :user/email, so this will be an empty return.
 (d/q '[:find (count ?comment)
        :where
        [?comment :comment/author]
@@ -37,6 +42,12 @@
        [?commentable :user/email]]
      db)
 
+; Dropping this constraint counts all comments (40).
+(d/q '[:find (count ?comment)
+       :where
+       [?comment :comment/author]
+       [?commentable :comments ?comment]]
+     db)
 
 (d/q '[:find ?attr-name
        :where
@@ -54,6 +65,8 @@
 (-> editor :comment/_author)
 
 (->> editor :comment/_author (mapcat :comments))
+
+(def editor-id (:db/id editor))
 
 (def txid (->> (d/q '[:find ?tx
                       :in $ ?e
@@ -84,19 +97,4 @@
      [[1 :user/email "jdoe@example.com"]
       [1 :user/firstName "John"]
       [2 :user/email "jane@example.com"]])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -44,7 +44,7 @@
 (def construct-jdoe (construct-user-map dbval (d/tempid :db.part/user) "jdoe@example.com" "John Doe"))
 
 ;; another database *value*
-(def db-with-jdoe (d/with dbval [construct-jdoe]))
+(def db-with-jdoe (:db-after (d/with dbval [construct-jdoe])))
 
 ;; jdoe already exists, should return nil
 (construct-user-map db-with-jdoe

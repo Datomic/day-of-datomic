@@ -26,7 +26,7 @@
 
 ;; test your function outside the database
 ;; (this is where you would use the test framework of your choice)
-(assert (= "Hello, John") (hello "John"))
+(assert (= "Hello, John" (hello "John")))
 
 ;; install the function in a database, under the name :hello
 (d/transact
