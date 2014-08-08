@@ -1,4 +1,4 @@
-;; work through at the REPL, evaulating each form
+;; work through at the REPL, evaluating each form
 
 (use 'datomic.samples.repl)
 
