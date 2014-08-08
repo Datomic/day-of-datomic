@@ -2,8 +2,8 @@
 
 (use 'datomic.samples.repl)
 
-(doc easy!)
 (easy!)
+(doc easy!)
 
 (doc scratch-conn)
 
@@ -101,14 +101,14 @@
 (def add-ten-new-users-result
   (d/transact conn ten-new-users))
 
-;; how many users are there? 
+;; how many users are there?
 (count (d/q '[:find ?e ?v :where [?e :user/email ?v]] (d/db conn)))
 
 ;; how many users have upvoted something?
 (count (d/q '[:find ?e
-            :where [?e :user/email]
-                   [?e :user/upVotes]]
-          (d/db conn)))
+              :where [?e :user/email]
+              [?e :user/upVotes]]
+            (d/db conn)))
 
 ;; Datomic does not need a left join to keep entities missing
 ;; some attribute. Just leave that attribute out of the query,
@@ -116,7 +116,7 @@
 (defpp users-with-emails-and-upvotes
   (->> (find-all-by (d/db conn) :user/email)
        (mapv
-        (fn [[ent]]                                
+        (fn [[ent]]
           {:email (:user/email ent)
            :upvoted (mapv :story/url (:user/upVotes ent))}))))
 
@@ -124,7 +124,7 @@
 ;; find all users and their upvotes, using data function maybe
 ;; to simulate outer join
 (d/q '[:find ?email ?upvote
-     :where
-     [?e :user/email ?email]
-     [(datomic.samples.query/maybe $ ?e :user/upVotes :none) ?upvote]]
-   (d/db conn))
+       :where
+       [?e :user/email ?email]
+       [(datomic.samples.query/maybe $ ?e :user/upVotes :none) ?upvote]]
+     (d/db conn))
