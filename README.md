@@ -17,11 +17,12 @@ Work through some of the tutorials in the tutorial directory,
 evaluating each form at the REPL. You might start with:
 
 * hello_world.clj
+* binding.clj
+* building_queries.clj
 * social_news.clj
 * provenance.clj
 * datalog_on_defrecords.clj
 * data_functions.clj
-* binding.clj
 * graph.clj
 
 You can also run all of the examples and see their output by running:
