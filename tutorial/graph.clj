@@ -6,36 +6,25 @@
 (def conn (scratch-conn))
 (transact-all conn (io/resource "day-of-datomic/graph.edn"))
 
-(def name-attrs [:group/name :role/name :user/name :roleInGroup/name])
+(def db (d/db conn))
 
-(defn touch-names
-  "Touch all name attributes of entities"
-  [qes-result]
-  (mapv
-   (fn [ents]
-     (mapv #(select-keys % name-attrs) ents))
-   qes-result))
+(d/q '[:find (pull ?role [:role/name]) .
+       :where
+       [?e :user/name "User1"]
+       [?e :hasRoleInGroups ?roleInGroup]
+       [?roleInGroup :hasGroups ?group]
+       [?group :group/name "Group2"]
+       [?roleInGroup :hasRoles ?role]]
+     (d/db conn))
 
-(defpp user1-roles-in-group2
-  (touch-names
-   (qes '[:find ?roleInGroup
-          :where
-          [?e :user/name "User1"]
-          [?e :hasRoleInGroups ?roleInGroup]
-          [?roleInGroup :hasGroups ?group]
-          [?group :group/name "Group2"]]
-        (d/db conn))))
-
-(defpp all-groups-and-roles-for-user-1
-  (touch-names
-   (qes '[:find ?group ?role
-          :where
-          [?e :user/name "User1"]
-          [?e :hasRoleInGroups ?roleInGroup]
-          [?roleInGroup :hasGroups ?group]
-          [?roleInGroup :hasRoles ?role]
-          [?group :group/name]]
-        (d/db conn))))
+(d/q '[:find (pull ?group [:group/name]) (pull ?role [:role/name])
+       :where
+       [?e :user/name "User1"]
+       [?e :hasRoleInGroups ?roleInGroup]
+       [?roleInGroup :hasGroups ?group]
+       [?roleInGroup :hasRoles ?role]
+       [?group :group/name]]
+     (d/db conn))
 
 
 
