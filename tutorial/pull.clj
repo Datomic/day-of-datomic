@@ -87,7 +87,14 @@
 ;; no limit
 (d/pull db '[(limit :track/_artists nil)] led-zeppelin)
 
-;; Examplew below follow http://docs.datomic.com/query.html#pull
+;; empty results
+(d/pull db '[:penguins] led-zeppelin)
+
+;; empty results in a collection
+(d/pull db '[{:track/artists [:penguins]}] ghost-riders)
+
+
+;; Examples below follow http://docs.datomic.com/query.html#pull
 
 ;; pull expression in query
 (d/q '[:find [(pull ?e [:release/name]) ...]

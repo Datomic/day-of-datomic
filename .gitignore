@@ -9,3 +9,5 @@
 /.lein-plugins/*
 /target/*
 .lein*
+.idea/*
+*.iml
