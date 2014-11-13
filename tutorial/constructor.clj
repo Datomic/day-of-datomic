@@ -1,8 +1,16 @@
-;; work through at the REPL, evaulating each form
-(use 'datomic.samples.repl)
-(easy!)
+;   Copyright (c) Cognitect, Inc. All rights reserved.
+;   The use and distribution terms for this software are covered by the
+;   Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+;   which can be found in the file epl-v10.html at the root of this distribution.
+;   By using this software in any fashion, you are agreeing to be bound by
+;   the terms of this license.
+;   You must not remove this notice, or any other, from this software.
 
-(def conn (scratch-conn))
+(require
+ '[datomic.api :as d]
+ '[datomic.samples.repl :as repl])
+
+(def conn (repl/scratch-conn))
 (def schema [{:db/id #db/id [:db.part/db],
               :db/ident :user/name,
               :db/valueType :db.type/string,
@@ -21,7 +29,7 @@
               :db/cardinality :db.cardinality/one,
               :db/index true,
               :db.install/_attribute :db.part/db}])
-(d/transact conn schema)
+@(d/transact conn schema)
 
 (def construct-user-map
   "Returns map that could be added to transaction data to create
@@ -38,13 +46,17 @@
 
 ;; get a database *value* for testing construct-user-map
 ;; all tests can be of pure functions!
-(def dbval (d/db conn))
+(def db (d/db conn))
 
 ;; create a map for jdoe
-(def construct-jdoe (construct-user-map dbval (d/tempid :db.part/user) "jdoe@example.com" "John Doe"))
+(def construct-jdoe
+  (construct-user-map db
+                      (d/tempid :db.part/user)
+                      "jdoe@example.com"
+                      "John Doe"))
 
 ;; another database *value*
-(def db-with-jdoe (:db-after (d/with dbval [construct-jdoe])))
+(def db-with-jdoe (:db-after (d/with db [construct-jdoe])))
 
 ;; jdoe already exists, should return nil
 (construct-user-map db-with-jdoe
@@ -62,19 +74,21 @@
                     {:user/name ["Username must be between 3 and 15 characters"]}))})
 
 ;; jdoe is valid, should return nil
-(user-errors dbval construct-jdoe)
+(user-errors db construct-jdoe)
 
 ;; validation failure
-(user-errors dbval (construct-user-map dbval (d/tempid :db.part/user) "jdoe@example.com"
+(user-errors db (construct-user-map db
+                                    (d/tempid :db.part/user)
+                                    "jdoe@example.com"
                                     "John WhoHasAnOverlyLongName"))
 
 ;; install the construct and validate functions in the database
-(d/transact conn [{:db/id (d/tempid :db.part/user)
-                   :db/ident :user/construct-map
-                   :db/fn construct-user-map}
-                  {:db/id (d/tempid :db.part/user)
-                   :db/ident :user/errors
-                   :db/fn user-errors}])
+@(d/transact conn [{:db/id (d/tempid :db.part/user)
+                    :db/ident :user/construct-map
+                    :db/fn construct-user-map}
+                   {:db/id (d/tempid :db.part/user)
+                    :db/ident :user/errors
+                    :db/fn user-errors}])
 
 ;; another database value
 (def db-with-fns (d/db conn))
@@ -99,17 +113,20 @@
 (create-user db-with-fns (d/tempid :db.part/user) "jdoe@example.com" "John Doe")
 
 ;; should fail with exception
-(-> (create-user db-with-fns (d/tempid :db.part/user) "jdoe@example.com" "John WithOverlyLongLastName")
-    should-throw)
+(-> (create-user db-with-fns
+                 (d/tempid :db.part/user)
+                 "jdoe@example.com"
+                 "John WithOverlyLongLastName")
+    repl/should-throw)
 
 ;; install the create function in the database
-(d/transact conn [{:db/id (d/tempid :db.part/user)
-                 :db/ident :user/create
-                 :db/fn create-user}])
+@(d/transact conn [{:db/id (d/tempid :db.part/user)
+                    :db/ident :user/create
+                    :db/fn create-user}])
 
 
 ;; create John Doe. Tada!
-(d/transact conn [[:user/create (d/tempid :db.part/user) "jdoe@example.com" "John Doe"]])
+@(d/transact conn [[:user/create (d/tempid :db.part/user) "jdoe@example.com" "John Doe"]])
 
 ;; Where are we?
 ;; Note that all three functions (user/construct-map, user/errors, and
@@ -135,7 +152,7 @@
                      :db/cardinality :db.cardinality/one,
                      :db/index true,
                      :db.install/_attribute :db.part/db}])
-(d/transact conn legacy-schema)
+@(d/transact conn legacy-schema)
 
 ;; because we designed our data functions to be explicit about
 ;; databases and ids, we can compose new information about users
@@ -165,3 +182,6 @@
 ;; Effort required: Put recorded-txes on a queue.  Might choose to
 ;; also give transactions client-generated identity, which could also
 ;; be layered in compositionally.
+
+
+(d/release conn)

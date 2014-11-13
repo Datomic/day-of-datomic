@@ -1,5 +1,14 @@
-(use 'datomic.samples.repl)
-(easy!)
+;   Copyright (c) Cognitect, Inc. All rights reserved.
+;   The use and distribution terms for this software are covered by the
+;   Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+;   which can be found in the file epl-v10.html at the root of this distribution.
+;   By using this software in any fashion, you are agreeing to be bound by
+;   the terms of this license.
+;   You must not remove this notice, or any other, from this software.
+
+(require
+ '[datomic.api :as d]
+ '[datomic.samples.repl :as repl])
 
 ;; inspired by http://www.lshift.net/blog/2010/08/21/some-relational-algebra-with-datatypes-in-clojure-12
 (defrecord Supplier [number name status city])
@@ -20,21 +29,29 @@
     (Shipment. "S2" "P2" 200)
     (Shipment. "S2" "P3" 400)})
 
-(doc maps->rel)
+(defn tuplify
+  "Returns a vector of the vals at keys ks in map."
+  [m ks]
+  (mapv #(get m %) ks))
+
+(defn maps->rel
+  "Convert a collection of maps into a relation, returning
+   the tuplification of each map by ks"
+  [maps ks]
+  (mapv #(tuplify % ks) maps))
+
 (maps->rel suppliers [:city :name])
 
-(defpp
-  query-on-defrecord-results
-  (d/q '[:find ?name
-         :where ["Paris" ?name]]
-       (maps->rel suppliers [:city :name])))
+(d/q '[:find [?name ...]
+       :where ["Paris" ?name]]
+     (maps->rel suppliers [:city :name]))
 
-(defpp
-  join-on-defrecord-results
-  (d/q '[:find ?name
-         :in $suppliers $shipments
-         :where
-         [$suppliers ?supplier ?name "Paris"]
-         [$shipments ?supplier]]
-       (maps->rel suppliers [:number :name :city])
-       (maps->rel shipments [:supplier])))
+(d/q '[:find [?name ...]
+       :in $suppliers $shipments
+       :where
+       [$suppliers ?supplier ?name "Paris"]
+       [$shipments ?supplier]]
+     (maps->rel suppliers [:number :name :city])
+     (maps->rel shipments [:supplier]))
+
+

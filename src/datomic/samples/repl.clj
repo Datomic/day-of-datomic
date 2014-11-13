@@ -1,4 +1,4 @@
-;   Copyright (c) Metadata Partners, LLC. All rights reserved.
+;   Copyright (c) Cognitect, Inc. All rights reserved.
 ;   The use and distribution terms for this software are covered by the
 ;   Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
 ;   which can be found in the file epl-v10.html at the root of this distribution.
@@ -7,10 +7,16 @@
 ;   You must not remove this notice, or any other, from this software.
 
 (ns datomic.samples.repl
-  (:use [datomic.api :only (q db) :as d])
-  (:require [clojure.pprint :as pprint]))
+  (:import datomic.Util java.util.Random)
+  (:require
+   [clojure.data.generators :as gen]
+   [clojure.java.io :as io]
+   [clojure.pprint :as pprint]
+   [datomic.api :as d]))
 
 (def db-uri-base "datomic:mem://")
+
+(def resource io/resource)
 
 (defn scratch-conn
   "Create a connection to an anonymous, in-memory database."
@@ -20,36 +26,22 @@
     (d/create-database uri)
     (d/connect uri)))
 
-(defmacro easy!
-  "Set up a bunch of REPL conveniences. See the source
-   with (source easy!) for details."
-  []
-  `(do
-     #_(set! *warn-on-reflection* true)
-     (set! *print-length* 20)
-     (use 'datomic.samples.datalog
-          'datomic.samples.io
-          'datomic.samples.query
-          'datomic.samples.generators
-          'datomic.samples.transact
-          'datomic.samples.schema
-          'clojure.repl
-          'clojure.pprint)
-     (require
-      '[clojure.string :as ~'str]
-      '[clojure.java.io :as ~'io]
-      '[clojure.pprint :as ~'pprint]
-      '[clojure.data.generators :as ~'gen]
-      '[datomic.api :as ~'d])
-     :awesome))
+(defn read-all
+  "Read all forms in f, where f is any resource that can
+   be opened by io/reader"
+  [f]
+  (Util/readAll (io/reader f)))
 
-(defmacro defpp
-  "Like def, but pretty prints the value of the var created"
-  [name & more]
-  `(do
-     (def ~name ~@more)
-     (pprint/pprint ~name)
-     (var ~name)))
+(defn transact-all
+  "Load and run all transactions from f, where f is any
+   resource that can be opened by io/reader."
+  [conn f]
+  (loop [n 0
+         [tx & more] (read-all f)]
+    (if tx
+      (recur (+ n (count (:tx-data  @(d/transact conn tx))))
+             more)
+      {:datoms n})))
 
 (defn transcript
   "Run all forms, printing a transcript as if forms were
@@ -77,3 +69,68 @@
     (throw (ex-info "Expected exception" {:forms '~forms}))
     (catch Throwable t#
       (println "Got expected exception:\n\t" (.getMessage t#)))))
+
+(defn modes
+  "Returns the set of modes for a collection."
+  [coll]
+  (->> (frequencies coll)
+       (reduce
+        (fn [[modes ct] [k v]]
+          (cond
+           (< v ct)  [modes ct]
+           (= v ct)  [(conj modes k) ct]
+           (> v ct) [#{k} v]))
+        [#{} 2])
+       first))
+
+(defn generate-some-comments
+  "Generates tranaction data for some comments"
+  [db n]
+  (let [story-ids (->> (d/q '[:find ?e :where [?e :story/url]] db) (mapv first))
+        user-ids (->> (d/q '[:find ?e :where [?e :user/email]] db) (mapv first))
+        comment-ids (->> (d/q '[:find ?e :where [?e :comment/author]] db) (mapv first))
+        choose1 (fn [n] (when (seq n) (gen/rand-nth n)))]
+    (assert (seq story-ids))
+    (assert (seq user-ids))
+    (->> (fn []
+           (let [comment-id (d/tempid :db.part/user)
+                 parent-id (or (choose1 comment-ids) (choose1 story-ids))]
+             [[:db/add parent-id :comments comment-id]
+              [:db/add comment-id :comment/author (choose1 user-ids)]
+              [:db/add comment-id :comment/body "blah"]]))
+         (repeatedly n)
+         (mapcat identity))))
+
+(defn setup-sample-db-1
+  [conn]
+  (doseq [schema ["day-of-datomic/social-news.edn"
+                  "day-of-datomic/provenance.edn"]]
+    (->> (io/resource schema)
+         (transact-all conn)))
+  (let [[[ed]] (seq (d/q '[:find ?e :where [?e :user/email "editor@example.com"]]
+                         (d/db conn)))]
+    @(d/transact conn [[:db/add ed :user/firstName "Edward"]]))
+  (binding [gen/*rnd* (Random. 42)]
+    (dotimes [_ 4]
+      @(d/transact conn (generate-some-comments (d/db conn) 5)))
+    conn))
+
+(defn choose-some
+  "Pick zero or more items at random from a collection"
+  [coll]
+  (take (gen/uniform 0 (count coll))
+        (gen/shuffle coll)))
+
+(defn gen-users-with-upvotes
+  "Make transaction data for example users, possibly with upvotes"
+  [stories email-prefix n]
+  (mapcat
+   (fn [n]
+     (let [user-id (d/tempid :db.part/user)
+           upvotes (map (fn [story] [:db/add user-id :user/upVotes story])
+                        (choose-some stories))]
+       (conj
+        upvotes
+        {:db/id user-id
+         :user/email (str email-prefix "-" n "@example.com")})))
+   (range n)))

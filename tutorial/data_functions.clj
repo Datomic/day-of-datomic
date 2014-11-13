@@ -1,12 +1,18 @@
-;; work through at the REPL, evaulating each form
-(use 'datomic.samples.repl)
-(easy!)
+;   Copyright (c) Cognitect, Inc. All rights reserved.
+;   The use and distribution terms for this software are covered by the
+;   Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+;   which can be found in the file epl-v10.html at the root of this distribution.
+;   By using this software in any fashion, you are agreeing to be bound by
+;   the terms of this license.
+;   You must not remove this notice, or any other, from this software.
 
-(def conn (scratch-conn))
-(transact-all conn (io/resource "day-of-datomic/social-news.edn"))
-(transact-all conn (io/resource "day-of-datomic/clojure-data-functions.edn"))
+(require
+ '[datomic.api :as d]
+ '[datomic.samples.repl :as repl])
 
-(dir datomic.api)
+(def conn (repl/scratch-conn))
+(repl/transact-all conn (repl/resource "day-of-datomic/social-news.edn"))
+(repl/transact-all conn (repl/resource "day-of-datomic/clojure-data-functions.edn"))
 
 (doc d/function)
 
@@ -29,27 +35,27 @@
 (assert (= "Hello, John" (hello "John")))
 
 ;; install the function in a database, under the name :hello
-(d/transact
- conn
- [{:db/id (d/tempid :db.part/user)
-   :db/doc "Example function returning a greeting"
-   :db/ident :hello
-   :db/fn hello}])
+@(d/transact
+  conn
+  [{:db/id (d/tempid :db.part/user)
+    :db/doc "Example function returning a greeting"
+    :db/ident :hello
+    :db/fn hello}])
 
-(def dbval (d/db conn))
+(def db (d/db conn))
 
 ;; retrieve function from db and call it
-(def hello-from-db (d/entity dbval :hello))
+(def hello-from-db (d/entity db :hello))
 (:db/doc hello-from-db)
 ((:db/fn hello-from-db) "John")
 
 ;; get a validation function from the database
 (def validate-person
-  (-> (d/entity dbval :validatePerson) :db/fn))
+  (-> (d/entity db :validatePerson) :db/fn))
 
 ;; validate an invalid person
 (-> (validate-person {:user/email "jdoe@example.com"})
-    should-throw)
+    repl/should-throw)
 
 ;; validate a valid person
 (validate-person {:user/email "jdoe@example.com"
@@ -58,33 +64,36 @@
 
 ;; get a constructor function from the database
 (def construct-person
-  (-> (d/entity dbval :constructPerson) :db/fn))
+  (-> (d/entity db :constructPerson) :db/fn))
 
 ;; test constructing an invalid person locally 
-(-> (construct-person dbval {})
-    should-throw)
+(-> (construct-person db {})
+    repl/should-throw)
 
+(d/q '[:find [?n]
+       :where [_ :db/ident ?n]]
+     db)
 ;; test constructing a valid person locally
 (construct-person
- dbval
+ db
  {:user/email "jdoe@example.com"
   :user/firstName "John"
   :user/lastName "Doe"})
 
 ;; create a person in the database!
-(defpp construct-person-result
-  (d/transact
-   conn
-   [[:constructPerson
-     {:user/email "jdoe@example.com"
-      :user/firstName "John"
-      :user/lastName "Doe"}]]))
+@(d/transact
+  conn
+  [[:constructPerson
+    {:user/email "jdoe@example.com"
+     :user/firstName "John"
+     :user/lastName "Doe"}]])
 
-;; get a person from the database
-(def john (find-by (d/db conn) :user/email "jdoe@example.com"))
+(def db (d/db conn))
 
 ;; get a view helper function from the database
 (def display-name
-  (-> (d/entity dbval :displayName) :db/fn))
+  (-> (d/entity db :displayName) :db/fn))
 
-(display-name john)
+(display-name (d/entity db [:user/email "jdoe@example.com"]))
+
+(d/release conn)

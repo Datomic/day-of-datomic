@@ -1,9 +1,17 @@
-(require
- '[datomic.api :as d])
+;   Copyright (c) Cognitect, Inc. All rights reserved.
+;   The use and distribution terms for this software are covered by the
+;   Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+;   which can be found in the file epl-v10.html at the root of this distribution.
+;   By using this software in any fashion, you are agreeing to be bound by
+;   the terms of this license.
+;   You must not remove this notice, or any other, from this software.
 
-(def uri (str "datomic:mem://" (d/squuid)))
-(d/create-database uri)
-(def conn (d/connect uri))
+(require
+ '[clojure.pprint :as pp]
+ '[datomic.api :as d]
+ '[datomic.samples.repl :as repl])
+
+(def conn (repl/scratch-conn))
 
 (def txes
   [[{:db/id #db/id[:db.part/db]
@@ -64,12 +72,12 @@
 (def since-2014 (d/since db #inst "2014-01-01"))
 (def history (d/history db))
 
-(def error-txes (->> (d/datoms db :aevt :tx/error)
-                     (map :e)
-                     (into #{})))
+(def error-txes (set (d/q '[:find [?e ...]
+                            :where [?e :tx/error]]
+                          db)))
 
 (defn correct?
-  [datom]
+  [_ datom]
   (not (contains? error-txes (:tx datom))))
 
 (def corrected (d/filter history correct?))
@@ -86,7 +94,7 @@
 (d/touch (d/entity since-2014 (d/entid db [:item/id "DLC-042"])))
 
 ;; more likely: multi-point-in-time join
-(d/q '[:find ?count
+(d/q '[:find ?count .
        :in $ $since ?id
        :where [$ ?e :item/id ?id]
               [$since ?e :item/count ?count]]
@@ -99,7 +107,8 @@
                    [?tx :db/txInstant ?inst]
                    [?a :db/ident ?aname]]
           history [:item/id "DLC-042"])
-     (sort-by #(nth % 2)))
+     (sort-by #(nth % 2))
+     pp/pprint)
 
 ;; full history of dilithium crystal counts
 (->> (d/q '[:find ?inst ?count
@@ -107,7 +116,8 @@
             :where [?id :item/count ?count ?tx true]
             [?tx :db/txInstant ?inst]]
           history [:item/id "DLC-042"])
-     (sort-by first))
+     (sort-by first)
+     pp/pprint)
 
 ;; corrected history of dilithium crystal counts
 (->> (d/q '[:find ?inst ?count
@@ -115,7 +125,8 @@
             :where [?id :item/count ?count ?tx true]
             [?tx :db/txInstant ?inst]]
           corrected [:item/id "DLC-042"])
-     (sort-by first))
+     (sort-by first)
+     pp/pprint)
 
 (d/release conn)
 

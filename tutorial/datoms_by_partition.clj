@@ -1,7 +1,16 @@
-(use 'datomic.samples.repl)
-(easy!)
+;   Copyright (c) Cognitect, Inc. All rights reserved.
+;   The use and distribution terms for this software are covered by the
+;   Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+;   which can be found in the file epl-v10.html at the root of this distribution.
+;   By using this software in any fashion, you are agreeing to be bound by
+;   the terms of this license.
+;   You must not remove this notice, or any other, from this software.
 
-(def conn (scratch-conn))
+(require
+ '[datomic.api :as d]
+ '[datomic.samples.repl :as repl])
+
+(def conn (repl/scratch-conn))
 
 (def user-partition (d/entid (d/db conn) :db.part/user))
 
@@ -16,6 +25,8 @@
                    {:db/id        (d/tempid :db.part/user)
                     :an-attribute :bar}])
 
+(def db (d/db conn))
+
 ;; Partitions are NOT designed to be used like an attribute, i.e. to
 ;; be queried over.  They are merely a storage organization hint,
 ;; which can improve the performance of queries when used
@@ -23,6 +34,8 @@
 
 ;; If you MUST find all entities in a partition, use something like the following:
 
-(->> (d/datoms (d/db conn) :eavt)
-           (map :e)
-           (filter (comp (partial = user-partition) d/part)))
+(->> (d/seek-datoms db :eavt (d/entid-at db :db.part/user 0))
+     (map :e)
+     (take-while #(= user-partition (d/part %))))
+
+(d/release conn)
