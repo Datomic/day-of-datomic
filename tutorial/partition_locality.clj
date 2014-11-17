@@ -23,15 +23,6 @@
        (fn [part]
          (take n (d/seek-datoms db :eavt (d/entid-at db part 0)))))))
 
-(defn trunc
-  "Return a string rep of x, shortened to n chars or less"
-  [x n]
-  (let [s (str x)]
-    (if (<= (count s) n)
-      s
-      (str (subs s 0 (- n 3)) "..."))))
-
-
 ;; sample data at https://github.com/Datomic/mbrainz-sample
 (def uri "datomic:free://localhost:4334/mbrainz-1968-1973")
 (def conn (d/connect uri))
@@ -39,15 +30,6 @@
 
 ;; since partition is high order bits in e, entities in the
 ;; same partition sort togther.
-(->> (partition-heads db 4)
-     (map
-      (fn [{:keys [e a v tx added]}]
-        {"part" (d/part e)
-         "e" (format "0x%016x" e)
-         "a" a
-         "v" (trunc v 24)
-         "tx" (format "0x%x" tx)
-         "added" added}))
-     (pp/print-table ["part" "e" "a" "v" "tx" "added"]))
+(->> (partition-heads db 4) (repl/datom-table db))
 
 

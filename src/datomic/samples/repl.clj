@@ -11,7 +11,7 @@
   (:require
    [clojure.data.generators :as gen]
    [clojure.java.io :as io]
-   [clojure.pprint :as pprint]
+   [clojure.pprint :as pp]
    [datomic.api :as d]))
 
 (def db-uri-base "datomic:mem://")
@@ -53,9 +53,9 @@
       (in-ns temp)
       (clojure.core/use 'clojure.core 'clojure.repl 'clojure.pprint)
       (doseq [f forms]
-        (pprint/pprint f)
+        (pp/pprint f)
         (print "=> ")
-        (pprint/pprint (eval f))
+        (pp/pprint (eval f))
         (println))
       (remove-ns temp)
       :done)))
@@ -134,3 +134,42 @@
         {:db/id user-id
          :user/email (str email-prefix "-" n "@example.com")})))
    (range n)))
+
+(defn trunc
+  "Return a string rep of x, shortened to n chars or less"
+  [x n]
+  (let [s (str x)]
+    (if (<= (count s) n)
+      s
+      (str (subs s 0 (- n 3)) "..."))))
+
+(def tx-part-e-a-added
+  "Sort datoms by tx, then e, then a, then added"
+  (reify
+   java.util.Comparator
+   (compare
+    [_ x y]
+    (cond
+     (< (:tx x) (:tx y)) -1
+     (> (:tx x) (:tx y)) 1
+     (< (:e x) (:e y)) -1
+     (> (:e x) (:e y)) 1
+     (< (:a x) (:a y)) -1
+     (> (:a x) (:a y)) 1
+     (false? (:added x)) -1
+     :default 1))))
+
+(defn datom-table
+  "Print a collection of datoms in an org-mode compatible table."
+  [db datoms]
+  (->> datoms
+       (map
+        (fn [{:keys [e a v tx added]}]
+          {"part" (d/part e)
+           "e" (format "0x%016x" e)
+           "a" (d/ident db a)
+           "v" (trunc v 24)
+           "tx" (format "0x%x" tx)
+           "added" added}))
+       (pp/print-table ["part" "e" "a" "v" "tx" "added"])))
+

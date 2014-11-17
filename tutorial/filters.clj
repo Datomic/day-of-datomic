@@ -72,6 +72,12 @@
 (def since-2014 (d/since db #inst "2014-01-01"))
 (def history (d/history db))
 
+;; print db as a table
+(->> (d/seek-datoms history :eavt (d/entid-at history :db.part/tx 0))
+     seq
+     (sort repl/tx-e-a-added)
+     (repl/datom-table history))
+
 (def error-txes (set (d/q '[:find [?e ...]
                             :where [?e :tx/error]]
                           db)))
@@ -129,17 +135,3 @@
      pp/pprint)
 
 (d/release conn)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
