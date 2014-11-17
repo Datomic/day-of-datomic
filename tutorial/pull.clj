@@ -7,8 +7,7 @@
 ;   You must not remove this notice, or any other, from this software.
 
 ;; The examples below parallel http://docs.datomic.com/pull.html
-;; sample data:
-;; http://s3.amazonaws.com/mbrainz/datomic-mbrainz-1968-1973-backup-2014-10-15.tar
+;; sample data at https://github.com/Datomic/mbrainz-sample
 
 ;; get connected
 (require '[datomic.api :as d])

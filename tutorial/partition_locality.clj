@@ -32,8 +32,7 @@
       (str (subs s 0 (- n 3)) "..."))))
 
 
-;; sample data at 
-;; http://s3.amazonaws.com/mbrainz/datomic-mbrainz-1968-1973-backup-2014-10-15.tar
+;; sample data at https://github.com/Datomic/mbrainz-sample
 (def uri "datomic:free://localhost:4334/mbrainz-1968-1973")
 (def conn (d/connect uri))
 (def db (d/db conn))
