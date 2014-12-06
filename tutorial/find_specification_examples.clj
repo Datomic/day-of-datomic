@@ -34,4 +34,25 @@
        :where [0 :db/ident ?v]]
      db)
 
+;; Sample examples as above, using map forms.
+;; relation find spec
+(d/q '{:find [?e ?v]
+       :where [[?e :db/ident ?v]]}
+     db)
+
+;; collection find spec
+(d/q '{:find [[?v ...]]
+       :where [[_ :db/ident ?v]]}
+     db)
+
+;; single tuple find spec
+(d/q '{:find [[?e ?ident]]
+       :where [[?e :db/ident ?ident]]}
+     db)
+
+;; single scalar find spec
+(d/q '{:find [?v .]
+       :where [[0 :db/ident ?v]]}
+     db)
+
 (d/release conn)

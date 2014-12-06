@@ -75,7 +75,7 @@
 ;; print db as a table
 (->> (d/seek-datoms history :eavt (d/entid-at history :db.part/tx 0))
      seq
-     (sort repl/tx-e-a-added)
+     (sort repl/tx-part-e-a-added)
      (repl/datom-table history))
 
 (def error-txes (set (d/q '[:find [?e ...]
