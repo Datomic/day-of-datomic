@@ -7,6 +7,7 @@
 ;   You must not remove this notice, or any other, from this software.
 
 (require
+ '[clojure.pprint :as pp]
  '[datomic.api :as d]
  '[datomic.samples.repl :as repl])
 
@@ -17,22 +18,42 @@
 
 (def db (d/db conn))
 
-(d/q '[:find (pull ?role [:role/name]) .
+;; find roles for user and particular groups
+(d/q '[:find (pull ?role [:role/name])
+       :in $ ?e ?group
        :where
-       [?e :user/name "User1"]
        [?e :hasRoleInGroups ?roleInGroup]
        [?roleInGroup :hasGroups ?group]
-       [?group :group/name "Group2"]
        [?roleInGroup :hasRoles ?role]]
-     (d/db conn))
+     db [:user/name "User1"] [:group/name "Group2"])
 
-(d/q '[:find (pull ?group [:group/name]) (pull ?role [:role/name])
-       :where
-       [?e :user/name "User1"]
-       [?e :hasRoleInGroups ?roleInGroup]
-       [?roleInGroup :hasGroups ?group]
-       [?roleInGroup :hasRoles ?role]
-       [?group :group/name]]
-     (d/db conn))
+;; find all groups and roles for a user
+(pp/pprint
+ (d/q '[:find (pull ?group [:group/name]) (pull ?role [:role/name])
+        :in $ ?e
+        :where
+        [?e :hasRoleInGroups ?roleInGroup]
+        [?roleInGroup :hasGroups ?group]
+        [?roleInGroup :hasRoles ?role]]
+      db [:user/name "User2"]))
+
+(def rules '[[(user-roles-in-groups ?user ?role ?group)
+              [?user :hasRoleInGroups ?roleInGroup]
+              [?roleInGroup :hasGroups ?group]
+              [?roleInGroup :hasRoles ?role]]])
+
+;; find all groups and roles for a user, using a datalog rulea
+(pp/pprint
+ (d/q '[:find (pull ?group [:group/name]) (pull ?role [:role/name])
+        :in $ % ?user
+        :where (user-roles-in-groups ?user ?role ?group)]
+      db rules [:user/name "User1"]))
+
+;; find common groups based on shared roles, counting shared roles
+(d/q '[:find (pull ?group [:group/name]) (count ?role)
+       :in $ % ?user1 ?user2
+       :where (user-roles-in-groups ?user1 ?role ?group)
+              (user-roles-in-groups ?user2 ?role ?group)]
+     db rules [:user/name "User1"] [:user/name "User2"])
 
 (d/release conn)

@@ -63,30 +63,72 @@
   :db/doc "A group's reference to a role"}
  ]
 
-
-[{:db/id #db/id[:db.part/user -1]
-  :user/name "User1"
-  :groups [#db/id [:db.part/user -31]
-           #db/id [:db.part/user -32]]
-  :hasRoleInGroups [#db/id [:db.part/user -21]
-                    #db/id [:db.part/user -22]]}
- {:db/id #db/id [:db.part/user -21]
-  :roleInGroup/name "U1G1R2"
-  :hasGroups [#db/id [:db.part/user -31]]
-  :hasRoles [#db/id [:db.part/user -42]]}
- {:db/id #db/id [:db.part/user -22]
-  :roleInGroup/name "U1G2R1"
-  :hasGroups [#db/id [:db.part/user -32]]
-  :hasRoles [#db/id [:db.part/user -41]]}
- {:db/id #db/id [:db.part/user -31]
-  :group/name "Group1"
-  :canHaves [#db/id [:db.part/user -41]
-             #db/id [:db.part/user -42]]}
- {:db/id #db/id [:db.part/user -32]
-  :group/name "Group2"
-  :canHaves [#db/id [:db.part/user -41]
-             #db/id [:db.part/user -42]]}
- {:db/id #db/id [:db.part/user -41]
+;; nodes
+[{:db/id #db/id [:db.part/user]
+  :user/name "User1"}
+ {:db/id #db/id [:db.part/user]
+  :user/name "User2"}
+ {:db/id #db/id [:db.part/user]
   :role/name "Role1"}
- {:db/id #db/id [:db.part/user -42]
-  :role/name "Role2"}]
+ {:db/id #db/id [:db.part/user]
+  :role/name "Role2"}
+ {:db/id #db/id [:db.part/user]
+  :role/name "Role3"}
+ {:db/id #db/id [:db.part/user]
+  :role/name "Role4"}
+ {:db/id #db/id [:db.part/user]
+  :role/name "Role5"}
+ {:db/id #db/id [:db.part/user]
+  :role/name "Role6"}
+ {:db/id #db/id [:db.part/user]
+  :group/name "Group1"}
+ {:db/id #db/id [:db.part/user]
+  :group/name "Group2"}
+ {:db/id #db/id [:db.part/user]
+  :group/name "Group3"}
+ {:db/id #db/id [:db.part/user]
+  :roleInGroup/name "U2G2R34"}
+ {:db/id #db/id [:db.part/user]
+  :roleInGroup/name "U1G2R23"}
+ {:db/id #db/id [:db.part/user]
+  :roleInGroup/name "U1G3R34"}
+ {:db/id #db/id [:db.part/user]
+  :roleInGroup/name "U2G3R56"}
+ {:db/id #db/id [:db.part/user]
+  :roleInGroup/name "U2G1R25"}
+ {:db/id #db/id [:db.part/user]
+  :roleInGroup/name "U1G1R12"}]
+
+;; edges
+[{:db/id [:roleInGroup/name "U2G2R34"]
+  :_hasRoleInGroups [:user/name "User2"]
+  :hasGroups #{[:group/name "Group2"]}
+  :hasRoles #{[:role/name "Role3"]
+              [:role/name "Role4"]}}
+ {:db/id [:roleInGroup/name "U1G2R23"]
+  :_hasRoleInGroups [:user/name "User1"]
+  :hasGroups #{[:group/name "Group2"]}
+  :hasRoles #{[:role/name "Role2"]
+              [:role/name "Role3"]}}
+ {:db/id [:roleInGroup/name "U1G3R34"]
+  :_hasRoleInGroups [:user/name "User1"]
+  :hasGroups #{[:group/name "Group3"]}
+  :hasRoles #{[:role/name "Role3"]
+              [:role/name "Role4"]}}
+ {:db/id [:roleInGroup/name "U2G3R56"]
+  :_hasRoleInGroups [:user/name "User2"]
+  :hasGroups #{[:group/name "Group3"]}
+  :hasRoles #{[:role/name "Role5"]
+              [:role/name "Role6"]}}
+ {:db/id [:roleInGroup/name "U2G1R25"]
+  :_hasRoleInGroups [:user/name "User2"]
+  :hasGroups #{[:group/name "Group1"]}
+  :hasRoles #{[:role/name "Role2"]
+              [:role/name "Role5"]}}
+ {:db/id [:roleInGroup/name "U1G1R12"]
+  :_hasRoleInGroups [:user/name "User1"]
+  :hasGroups #{[:group/name "Group1"]}
+  :hasRoles #{[:role/name "Role1"]
+              [:role/name "Role2"]}}]
+
+
