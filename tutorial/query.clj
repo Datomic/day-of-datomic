@@ -80,6 +80,38 @@
               [?artist :artist/startYear ?year]]
      db "John Lennon")
 
+(d/q '[:find (count ?eid) .
+       :where [?eid :artist/name]
+              (not [?eid :artist/country])]
+     db) 
+
+(d/q '[:find (count ?eid) .
+       :where [?eid :artist/name]
+              (not [?eid :artist/country]
+                   [?eid :artist/gender])]
+     db)
+
+(d/q '[:find (count ?artist) .
+       :where [?artist :artist/name]
+              (not-join [?artist]
+                [?release :release/artists ?artist]
+                [?release :release/year 1970])]
+     db)
+
+(d/q '[:find (count ?artist) .
+       :where (or [?artist :artist/type :artist.type/group]
+              (and [?artist :artist/type :artist.type/person]
+                   [?artist :artist/gender :artist.gender/female]))]
+     db)
+
+(d/q '[:find (count ?release) .
+       :where [?release :release/name]
+       (or-join [?release]
+         (and [?release :release/artists ?artist]
+              [?artist :artist/country :country/CA])
+         [?release :release/year 1970])]
+     db)
+
 (d/q '[:find ?name ?year
        :where [?artist :artist/name ?name]
               [?artist :artist/startYear ?year]
