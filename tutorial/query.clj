@@ -82,20 +82,21 @@
 
 (d/q '[:find (count ?eid) .
        :where [?eid :artist/name]
-              (not [?eid :artist/country])]
+              (not [?eid :artist/country :country/CA])]
      db) 
-
-(d/q '[:find (count ?eid) .
-       :where [?eid :artist/name]
-              (not [?eid :artist/country]
-                   [?eid :artist/gender])]
-     db)
 
 (d/q '[:find (count ?artist) .
        :where [?artist :artist/name]
               (not-join [?artist]
                 [?release :release/artists ?artist]
                 [?release :release/year 1970])]
+     db)
+
+(d/q '[:find (count ?r) .
+       :where [?r :release/name "Live at Carnegie Hall"]
+       (not-join [?r]
+                 [?r :release/artists ?a]
+                 [?a :artist/name "Bill Withers"])]
      db)
 
 (d/q '[:find (count ?artist) .
