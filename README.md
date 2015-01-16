@@ -41,6 +41,12 @@ For specific feedback on the tutorials, please create an
 For questions about Datomic, try the [public mailing
 list](http://groups.google.com/group/datomic).
 
+## Contributing
+
+This library is developed internally by Cognitect. Issues can be filed using
+[Github Issues](https://github.com/Datomic/day-of-datomic/issues). We do
+not accept pull request or patches.
+
 ## License
 
 EPL. See epl-v10.html at the project root.
