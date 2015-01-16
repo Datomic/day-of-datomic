@@ -31,7 +31,7 @@
       :db/ident :story/slug
       :db/valueType :db.type/string
       :db/cardinality :db.cardinality/one
-      :db.install/_attribute :db.part/db}]]
+      :db.install/_attribute :db.part/db}]
   
   ;; comments
   [{:db/id #db/id[:db.part/db]
@@ -96,5 +96,5 @@
    {:db/id #db/id [:db.part/user]
     :user/firstName "Ed"
     :user/lastName "Itor"
-    :user/email "editor@example.com"}]
+    :user/email "editor@example.com"}]]
   }}
