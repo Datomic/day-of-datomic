@@ -299,3 +299,12 @@
        :with ?media
        :where [?media :medium/trackCount ?track-count]]
      db)
+
+;; use d/query to specify a timeout
+(d/query {:query '[:find ?track-name
+                   :in $ ?artist-name
+                   :where [?track :track/artists ?artist]
+                   [?track :track/name ?track-name]
+                   [?artist :artist/name ?artist-name]]
+          :args [db "John Lennon"]
+          :timeout 100})
