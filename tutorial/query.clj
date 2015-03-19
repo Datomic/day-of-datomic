@@ -10,7 +10,8 @@
 ;; sample data at https://github.com/Datomic/mbrainz-sample
 
 ;; get connected
-(require '[datomic.api :as d])
+(require '[datomic.api :as d]
+         '[datomic.samples.repl :as repl])
 (def uri "datomic:free://localhost:4334/mbrainz-1968-1973")
 (def conn (d/connect uri))
 (def db (d/db conn))
@@ -299,3 +300,14 @@
        :with ?media
        :where [?media :medium/trackCount ?track-count]]
      db)
+
+;; use d/query to specify a timeout
+;; should throw an exception
+(-> (d/query {:query   '[:find ?track-name
+                         :in $ ?artist-name
+                         :where [?track :track/artists ?artist]
+                         [?track :track/name ?track-name]
+                         [?artist :artist/name ?artist-name]]
+              :args    [db "John Lennon"]
+              :timeout 100})
+    repl/should-throw)
