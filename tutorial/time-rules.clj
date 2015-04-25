@@ -86,7 +86,7 @@
        (map (partial zipmap ks))
        (pp/print-table ks)))
 
-;; mentioned-at is either entity-at and object-at
+;; mentioned-at is either entity-at or object-at
 ;; (exercise to reader: build this with SQL + convention)
 (->> (d/q '[:find ?t ?inst
             :in $ % ?n
@@ -112,8 +112,29 @@
      (sort-by #(nth % 2))
      (tableize [:a :ident :t :inst]))
 
+;; combination history / now query
+;; history: created-at, updated-at
+;; current: value of :artist/name
 
+;; timing (run a few times to warm up)
+(time
+ (d/q '[:find ?e ?n (min ?inst) (max ?inst)
+        :in $ $now %
+        :where
+        [$now ?e :artist/name ?n]
+        (entity-at ?e _ _ ?inst)]
+      hist db time-rules))
 
+;; view results about 'John L*'
+(->> (d/q '[:find ?e ?n (min ?inst) (max ?inst)
+            :in $ $now %
+            :where
+            [$now ?e :artist/name ?n]
+            [(.startsWith ^String ?n "John L")]
+            (entity-at ?e _ _ ?inst)]
+          hist db time-rules)
+     (sort-by #(nth % 1))
+     (tableize [:e :name :created-at :updated-at]))
 
 
 
