@@ -296,10 +296,12 @@
        (sort-by (comp - second))
        ffirst))
 
-(d/q '[:find (user/mode ?track-count) .
-       :with ?media
-       :where [?media :medium/trackCount ?track-count]]
-     db)
+;; This works when evaluating forms one at a time, but throws a
+;; NullPointerException under 'lein run -m datomic.samples.tutorial'
+#_(d/q '[:find (user/mode ?track-count) .
+         :with ?media
+         :where [?media :medium/trackCount ?track-count]]
+       db)
 
 ;; use d/query to specify a timeout
 ;; should throw an exception
