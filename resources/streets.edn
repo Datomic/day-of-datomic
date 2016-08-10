@@ -1,0 +1,47 @@
+;; People have names and streets
+[{:db/id #db/id [:db.part/db]
+  :db/ident         :person/name
+  :db/unique        :db.unique/identity
+  :db/valueType     :db.type/string
+  :db/cardinality   :db.cardinality/one
+  :db.install/_attribute :db.part/db}
+ {:db/id #db/id [:db.part/db]
+  :db/ident         :person/street
+  :db/valueType     :db.type/string
+  :db/cardinality   :db.cardinality/one
+  :db.install/_attribute :db.part/db}
+ {:db/id #db/id [:db.part/tx]
+  :db/txInstant #inst "1970"}]
+
+;; Some people and their streets
+[{:db/id #db/id [:db.part/user]
+  :person/name "John"
+  :person/street "Main"}
+ {:db/id #db/id [:db.part/user]
+  :person/name "Joe"
+  :person/street "1st"}
+ {:db/id #db/id [:db.part/user]
+  :person/name "Mary"
+  :person/street "Elm"}
+ {:db/id #db/id [:db.part/tx]
+  :db/txInstant #inst "1980"}]
+
+;; Mary and Joe both moved at the same time
+[{:db/id [:person/name "Mary"]
+  :person/street "2nd"}
+ {:db/id [:person/name "Joe"]
+  :person/street "Broadway"}
+ {:db/id #db/id [:db.part/tx]
+  :db/txInstant #inst "1983"}]
+
+;; John moved to Ash st.
+[{:db/id [:person/name "John"]
+  :person/street "Ash"}
+ {:db/id #db/id [:db.part/tx]
+  :db/txInstant #inst "1986"}]
+
+;; John moves a lot
+[{:db/id [:person/name "John"]
+  :person/street "3rd"}
+ {:db/id #db/id [:db.part/tx]
+  :db/txInstant #inst "1989"}]
