@@ -72,6 +72,19 @@
 ;; intention (shown below). But it is interesting that you don't *have* to
 ;; understand the query to find problems by reordering or removing
 ;; clauses. You could even write a program to do it for you.
+
+
+;; Anayzing the Query based on domain knowledge
+
+;; 1. Lots of datoms match [?e1 :a ?v1]
+;; 2. Lots of daotms match [?e2 :a ?v2]
+;; 3. 1 & 2 have no vars in common, so this makes a cross-product. Danger!
+;; 4. Very few datoms match [?e1 :a 10]
+;; 5. Given 4, 1 is not needed at all
+;; 6. Very few datoms match [?e2 :a ?e1]
+;; 7. Given 6, 2 is not needed at all
+;; 8. Given 4 & 6, ?e1 is known at input time
+;; So:
 (d/query {:query '[:find ?e1 ?e2
                    :in $ ?e1
                    :where [?e2 :a ?e1]]
