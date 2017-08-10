@@ -49,7 +49,7 @@
 (defn with-confidence-level
   "Filter database to only those datoms whose
    transaction :source/confidence is <= level.  Sources
-   whose confidence is not specified are presumed trusted."
+   whose confidence is not specified are presumed not trusted."
   [db level]
   (d/filter
    db
