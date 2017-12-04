@@ -71,24 +71,28 @@
 ;; wildcard + map specification
 (d/pull db '[* {:track/artists [:artist/name]}] ghost-riders)
 
-;; default expression
-(d/pull db '[:artist/name (default :artist/endYear 0)] mccartney)
+;; default option
+(d/pull db '[:artist/name (:artist/endYear :default 0)] mccartney)
 
-;; default expression with different type
-(d/pull db '[:artist/name (default :artist/endYear "N/A")] mccartney)
+;; default option with different type
+(d/pull db '[:artist/name (:artist/endYear :default "N/A")] mccartney)
 
 ;; absent attributes are omitted from results
 (d/pull db '[:artist/name :died-in-1966?] mccartney)
 
 ;; explicit limit
-(d/pull db '[(limit :track/_artists 10)] led-zeppelin)
+(d/pull db '[(:track/_artists :limit 10)] led-zeppelin)
 
 ;; limit + subspec
-(d/pull db '[{(limit :track/_artists 10) [:track/name]}]
+(d/pull db '[{(:track/_artists :limit 10) [:track/name]}]
+        led-zeppelin)
+
+;; limit + subspec + :as option
+(d/pull db '[{(:track/_artists :limit 10 :as "Tracks") [:track/name]}] 
         led-zeppelin)
 
 ;; no limit
-(d/pull db '[(limit :track/_artists nil)] led-zeppelin)
+(d/pull db '[(:track/_artists :limit nil)] led-zeppelin)
 
 ;; empty results
 (d/pull db '[:penguins] led-zeppelin)
