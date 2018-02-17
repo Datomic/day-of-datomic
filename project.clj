@@ -2,7 +2,7 @@
   :description "Sample Code for Day of Datomic Presentation"
   :plugins [[lein-tg "0.0.1"]]
   :jvm-opts ["-Xmx1g" "-server"]
-  :dependencies [[org.clojure/clojure "1.9.0-rc2"]
+  :dependencies [[org.clojure/clojure "1.9.0-RC2"]
                  [org.clojure/test.generative "0.5.2"]
                  [com.datomic/datomic-free "0.9.5656"]
                  [incanter/incanter-charts "1.9.0"]
