@@ -1,0 +1,50 @@
+;   Copyright (c) Cognitect, Inc. All rights reserved.
+;   The use and distribution terms for this software are covered by the
+;   Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+;   which can be found in the file epl-v10.html at the root of this distribution.
+;   By using this software in any fashion, you are agreeing to be bound by
+;   the terms of this license.
+;   You must not remove this notice, or any other, from this software.
+
+(require '[datomic.api :as d])
+
+(def uri "datomic:mem://example")
+(d/create-database uri)
+
+(def schema [{:db/ident :account/number
+              :db/cardinality :db.cardinality/one
+              :db/valueType :db.type/string
+              :db/unique :db.unique/identity}
+             {:db/ident :account/balance
+              :db/cardinality :db.cardinality/one
+              :db/valueType :db.type/double}])
+
+(def conn (d/connect uri))
+(d/transact conn schema)
+
+(def initial-data [{:account/number "123"
+                    :account/balance 100.00}])
+(d/transact conn initial-data)
+
+(def inc-attr #db/fn {:lang "clojure"
+                      :params [db e a amount]
+                      :code [[:db/add e a
+                              (-> (d/entity db e) a (+ amount))]]})
+
+(def db (d/db conn))
+(inc-attr db [:account/number "123"] :account/balance 10)
+=> [[:db/add [:account/number "123"] :account/balance 110.0]]
+
+(def install-fn
+  [{:db/ident :inc-attr
+    :db/doc "Data function that increments value of attribute a by amount."
+    :db/fn inc-attr}])
+
+(d/transact conn install-fn)
+
+;; test calling the database function
+(def db-fn (-> conn d/db (d/entity :inc-attr) :db/fn))
+(db-fn db [:account/number "123"] :account/balance 10)
+
+;; invoke transaction fn
+(d/transact conn [[:inc-attr [:account/number "123"] :account/balance 42]])
