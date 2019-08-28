@@ -1,0 +1,12 @@
+{:deps
+ {org.clojure/data.csv {:mvn/version "0.1.4"}
+  org.clojure/data.json {:mvn/version "0.2.6"}
+  org.clojure/data.generators {:mvn/version "0.1.2"}
+  org.clojure/clojure {:mvn/version "1.10.1"}
+  com.datomic/datomic-pro {:mvn/version "0.9.5951"}}
+ :paths ["src" "resources"]
+ :mvn/repos {"my.datomic.com"
+             {:url "https://my.datomic.com/repo"}}
+ :aliases
+ {;; edit this if you're using a newer version of REBL
+  :rebl {:extra-deps {rebl {:local/root "REBL-0.9.218.jar"}}}}}
