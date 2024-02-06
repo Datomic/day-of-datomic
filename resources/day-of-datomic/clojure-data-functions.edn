@@ -6,14 +6,16 @@
   :db/cardinality :db.cardinality/one
   :db.install/_attribute :db.part/db}
 
-  {:db/id #db/id [:db.part/user]
+ {:db/id #db/id [:db.part/user]
   :db/ident :inc
   :db/doc "Data function that increments value of attribute a by amount."
   :db/fn #db/fn {:lang "clojure"
                  :params [db e a amount]
                  :code [[:db/add e a
                          (-> (d/entity db e) a (+ amount))]]}}
-  
+
+ ;; In 0.9.5927 and later, this is better done with an entity spec
+ ;; https://docs.datomic.com/pro/schema/schema.html#entity-specs
  {:db/id #db/id [:db.part/user]
   :db/ident :validatePerson
   :db/doc "Validate required fields for person"
