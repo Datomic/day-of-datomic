@@ -29,7 +29,7 @@
      [(tx-data ?log ?tx) [[?es]]]]])
 
 ;; Example usage of time-rules against https://github.com/Datomic/mbrainz-sample
-(def conn (d/connect "datomic:free://localhost:4334/mbrainz-1968-1973"))
+(def conn (d/connect "datomic:dev://localhost:4334/mbrainz-1968-1973"))
 (def db (d/db conn))
 
 ;; add something to John Lennon right now

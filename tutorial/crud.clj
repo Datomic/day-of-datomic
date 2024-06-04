@@ -9,7 +9,7 @@
 (require '[datomic.api :as d])
 
 ;; new database
-(def uri "datomic:free://localhost:4334/crud-example")
+(def uri "datomic:mem://localhost:4334/crud-example")
 (d/create-database uri)
 (def conn (d/connect uri))
 

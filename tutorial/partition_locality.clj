@@ -24,7 +24,7 @@
          (take n (d/seek-datoms db :eavt (d/entid-at db part 0)))))))
 
 ;; sample data at https://github.com/Datomic/mbrainz-sample
-(def uri "datomic:free://localhost:4334/mbrainz-1968-1973")
+(def uri "datomic:dev://localhost:4334/mbrainz-1968-1973")
 (def conn (d/connect uri))
 (def db (d/db conn))
 
